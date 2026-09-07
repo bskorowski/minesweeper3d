@@ -35,6 +35,7 @@ add_library(
    ./src/math/matrix.hpp
 
    ./src/render/camera.hpp
+   ./src/render/camera.cpp
    ./src/render/mesh.hpp
    ./src/render/program.cpp
    ./src/render/program.hpp
@@ -45,6 +46,13 @@ add_library(
 
    ./src/application.cpp
    ./src/application.cpp
+
+   ./src/ui/scene.cpp
+   ./src/ui/scene.hpp
+   ./src/ui/main_menu_scene.cpp
+   ./src/ui/main_menu_scene.hpp
+   ./src/ui/game_scene.cpp
+   ./src/ui/game_scene.hpp
 
    ./vendor/imgui/imconfig.h
    ./vendor/imgui/imgui.h

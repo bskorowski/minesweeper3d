@@ -13,9 +13,9 @@ struct Crosshair {
   void draw(const m4x4f &proj) const;
 
 private:
-  Program shaderProgram; // Later this would could be whole HUD shader
+  Program shaderProgram{}; // Later this would could be whole HUD shader
 
   GLuint projectionLoc_ = -1;
-  GLuint vao;
-  GLuint vbo;
+  GLuint vao = -1;
+  GLuint vbo = -1;
 };

@@ -87,7 +87,6 @@ void Crosshair::draw(const m4x4f &proj) const {
   shaderProgram.use();
   shaderProgram.setM4x4(projectionLoc_, proj);
   glBindVertexArray(vao);
-
   glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

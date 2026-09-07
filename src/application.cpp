@@ -16,6 +16,9 @@
 #include "render/camera.hpp"
 #include "resource_manager.hpp"
 #include "settings.hpp"
+#include "ui/game_scene.hpp"
+#include "ui/main_menu_scene.hpp"
+#include "ui/scene.hpp"
 
 static void GLFWErrorCallback(int code, const char *description) {
   logzy::error("GLFW Error occurred. Code {}. Description: {}", code,
@@ -155,151 +158,8 @@ auto Application::initialize() -> bool {
   // TODO :: Later scenes should load assets they need
   loadTextures();
 
+  sceneManager_.addScene(std::make_unique<GameScene>());
   return true;
-}
-
-static void handleInputs(const Input &input, const Settings &settings,
-                         Board &board, Camera &camera, GLFWwindow *window,
-                         bool &menuOpen, bool &profilerMenuOpen, float dt) {
-
-  // Showing cursor when alt is pressed
-  if (input.isPressed(Key::Escape)) {
-    menuOpen = !menuOpen;
-    if (menuOpen) {
-      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_CAPTURED);
-    } else {
-      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
-  }
-
-  if (input.isPressed(Key::F1)) {
-    profilerMenuOpen = !profilerMenuOpen;
-  }
-
-  // Game inputs are ignored in cursor/ui mode
-  if (menuOpen) {
-    return;
-  }
-
-  //////////////////////////////////
-  /// Game inputs
-
-  // Mouse movement
-  v2d mouseDelta = input.getMouseDelta();
-  camera.rotate(vec3<float>(
-      static_cast<float>(mouseDelta.data[0][1]) * settings.sensitivity * dt,
-      static_cast<float>(-mouseDelta.data[0][0]) * settings.sensitivity * dt,
-      0.0F));
-
-  float cameraDistance = settings.cameraSpeed * dt;
-
-  if (input.isDown(Key::A)) {
-    camera.move(Camera::Direction::Left, cameraDistance);
-  }
-  if (input.isDown(Key::D)) {
-    camera.move(Camera::Direction::Right, cameraDistance);
-  }
-  if (input.isDown(Key::W)) {
-    camera.move(Camera::Direction::Forward, cameraDistance);
-  }
-  if (input.isDown(Key::S)) {
-    camera.move(Camera::Direction::Backward, cameraDistance);
-  }
-  if (input.isDown(Key::Space)) {
-    camera.move(Camera::Direction::Up, cameraDistance);
-  }
-  if (input.isDown(Key::LeftControl)) {
-    camera.move(Camera::Direction::Down, cameraDistance);
-  }
-
-  if (input.isPressed(Key::N)) {
-    board.toggleDrawNeighbours(!board.drawDugAdjacent);
-  }
-
-  if (input.isPressed(MouseButton::Left)) {
-    board.onLeftClick(camera.position, camera.getDirection());
-  }
-
-  if (input.isPressed(MouseButton::Right)) {
-    board.onRightClick(camera.position, camera.getDirection());
-  }
-}
-
-static void drawMenu(GLFWwindow *window, Settings &settings) {
-
-  constexpr float minMovementSpeed = 1.0f;
-  constexpr float maxMovementSpeed = 20.0f;
-
-  constexpr float minSensitivity = 0.01f;
-  constexpr float maxSensitivity = 20.0f;
-
-  {
-    const ImGuiViewport *vp = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(vp->WorkPos);
-    ImGui::SetNextWindowSize(vp->WorkSize);
-    ImGuiWindowFlags flags = 0;
-    flags |= ImGuiWindowFlags_NoTitleBar;
-    flags |= ImGuiWindowFlags_NoCollapse;
-    flags |= ImGuiWindowFlags_NoResize;
-    flags |= ImGuiWindowFlags_NoMove;
-    // flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
-    // flags |= ImGuiWindowFlags_NoNavFocus;
-    ImGui::Begin("Settings", nullptr, flags);
-
-    ImGui::SetWindowFontScale(3.0f);
-    ImVec2 cursorBeforeMenu = ImGui::GetCursorPos();
-
-    const char *menuText = "Menu";
-    ImVec2 menuTextSize = ImGui::CalcTextSize(menuText);
-    float menuX = (vp->WorkSize.x - menuTextSize.x) * 0.5f;
-    ImGui::SetCursorPos((ImVec2(menuX, cursorBeforeMenu.y)));
-    ImGui::Text("%s", menuText);
-    ImGui::SetCursorPos(
-        (ImVec2(cursorBeforeMenu.x, cursorBeforeMenu.y + menuTextSize.y)));
-    ImGui::SetWindowFontScale(1.0f);
-
-    ImGui::Separator();
-
-    {
-      ImGui::SetWindowFontScale(2.0f);
-      ImGui::Text("%s", "Settings");
-      ImGui::SetWindowFontScale(1.0f);
-      constexpr float sliderMaxWidth = 400.0f;
-      float availableWidth = ImGui::GetContentRegionAvail().x;
-      float sliderWidth = std::min(availableWidth, sliderMaxWidth);
-      ImGui::PushItemWidth(sliderWidth);
-      ImGui::SliderFloat("Mouse sensitivity", &settings.sensitivity,
-                         minSensitivity, maxSensitivity);
-      ImGui::SliderFloat("Player movement speed", &settings.cameraSpeed,
-                         minMovementSpeed, maxMovementSpeed);
-      ImGui::PopItemWidth();
-    }
-    ImGui::Separator();
-
-    ImGui::SetWindowFontScale(2.0f);
-    ImGui::Text("Controls");
-    ImGui::SetWindowFontScale(1.0f);
-
-    static constexpr std::array controls{
-        std::pair{"Escape", "Toggle Menu / Release Mouse"},
-        std::pair{"F1", "Toggle Debug/Profiler Window"},
-        std::pair{"W, A, S, D", "Movement (Forward, Left, Back, Right)"},
-        std::pair{"Space", "Move Up"},
-        std::pair{"Left Ctrl", "Move Down"},
-        std::pair{"Mouse", "Look Around"},
-        std::pair{"Left Click", "Dig / Reveal Cell"},
-        std::pair{"Right Click", "Place Flag"},
-        std::pair{"N", "Toggle dug adjacent cell visibility"}};
-
-    for (const auto &[key, description] : controls) {
-      ImGui::Text("%s - %s", key, description);
-    }
-
-    if (ImGui::Button("Exit")) {
-      glfwSetWindowShouldClose(window, true);
-    }
-    ImGui::End();
-  }
 }
 
 void drawRenderData(const ProfilerData &data) {
@@ -330,19 +190,6 @@ void drawRenderData(const ProfilerData &data) {
   ImGui::End();
 }
 
-static void drawHUD(const Crosshair &cs, const m4x4f &proj) {
-  // Drawing ui
-  // Static ui doesnt need depth
-  // glDisable(GL_DEPTH_TEST);
-  //
-
-  // Crosshair
-  cs.draw(proj);
-
-  // Resetting depth test
-  // glEnable(GL_DEPTH_TEST);
-}
-
 void Application::run() {
 
   // Configs
@@ -367,21 +214,6 @@ void Application::run() {
   v2d mousePos;
   glfwGetCursorPos(mainWindow_, &(mousePos.data[0][0]), &(mousePos.data[0][1]));
   double lastTime = glfwGetTime();
-
-  // HUD
-  int windowWidth = -1;
-  int windowHeight = -1;
-  glfwGetWindowSize(mainWindow_, &windowWidth, &windowHeight);
-  Crosshair crosshair(vec2<std::uint32_t>(windowWidth, windowHeight),
-                      vec2(10u, 10u), vec3(0.0f, 0.0f, 1.0f));
-
-  constexpr float fov = 50.0f;
-  constexpr float near = 0.01f;
-  constexpr float far = 100.0f;
-  const float ratio = static_cast<float>(windowWidth) / windowHeight;
-  auto persp = perspective(fov, ratio, near, far);
-  auto ortho = orthographic(0.0f, windowWidth, 0.0F, windowHeight, -1.0f);
-
   // Profilers
 
   // triple buffering
@@ -395,12 +227,16 @@ void Application::run() {
   ProfilerData profilerData{};
   static GLsync frameSync = nullptr;
 
+  Scene *currentScene = sceneManager_.currentScene();
+
   while (!glfwWindowShouldClose(mainWindow_)) {
+    Scene *currentScene = sceneManager_.currentScene();
+
     glfwPollEvents();
     input_.update(mainWindow_);
 
     double time = static_cast<float>(glfwGetTime());
-    float dt = time - lastTime;
+    Application::deltaTime_ = time - lastTime;
     lastTime = time;
     ++profilerData.frameCounter;
     {
@@ -413,11 +249,11 @@ void Application::run() {
     }
 
     // Seconds to ms
-    profilerData.totalFrameMs = dt * 1000.0;
+    profilerData.totalFrameMs = Application::getDeltaTime() * 1000.0;
     {
       ScopedTimer updateTimer(profilerData.updateMs);
-      handleInputs(input_, settings, board, camera, mainWindow_, menuOpen,
-                   profilerMenuOpen, dt);
+      currentScene->handleInputs();
+      currentScene->update();
     }
 
     {
@@ -430,15 +266,11 @@ void Application::run() {
           queryBuffers;
 
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      const m4x4f &v = camera.getView();
-
       glBeginQuery(GL_TIME_ELAPSED, queryID[frontBuffer]);
 
-      board.draw(v, persp);
-      drawHUD(crosshair, ortho);
+      currentScene->draw();
 
       glEndQuery(GL_TIME_ELAPSED);
-
       GLuint available = 1;
       glGetQueryObjectuiv(queryID[backBuffer], GL_QUERY_RESULT_AVAILABLE,
                           &available);
@@ -452,19 +284,10 @@ void Application::run() {
     }
     {
       ScopedTimer uiTimer(profilerData.uiUpdateMs);
-
       ImGui_ImplOpenGL3_NewFrame();
       ImGui_ImplGlfw_NewFrame();
       ImGui::NewFrame();
-
-      if (profilerMenuOpen) {
-        drawRenderData(profilerData);
-      }
-
-      if (menuOpen) {
-        drawMenu(mainWindow_, settings);
-      }
-
+      currentScene->updateAndDrawUI();
       ImGui::Render();
     }
     {
@@ -499,3 +322,15 @@ auto Application::shutdown() -> bool {
 
   return true;
 }
+
+auto Application::getDeltaTime() -> float { return deltaTime_; }
+
+auto Application::getWindow() -> GLFWwindow * { return mainWindow_; }
+
+auto Application::getInput() -> Input & { return Application::input_; }
+
+auto Application::getSceneManager() -> SceneManager & {
+  return Application::sceneManager_;
+}
+
+auto Application::getSettings() -> Settings & { return Application::settings_; }
