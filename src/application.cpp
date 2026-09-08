@@ -92,7 +92,6 @@ static auto initializeMainGLFWWindow(GLFWwindow *window) -> bool {
   glfwSetErrorCallback(GLFWErrorCallback);
 
   // Disabling cursor when focused
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   return true;
 }
 
@@ -158,7 +157,7 @@ auto Application::initialize() -> bool {
   // TODO :: Later scenes should load assets they need
   loadTextures();
 
-  sceneManager_.addScene(std::make_unique<GameScene>());
+  sceneManager_.navigateTo(std::make_unique<MainMenuScene>());
   return true;
 }
 
@@ -227,9 +226,10 @@ void Application::run() {
   ProfilerData profilerData{};
   static GLsync frameSync = nullptr;
 
-  Scene *currentScene = sceneManager_.currentScene();
+  Scene *currentScene = nullptr;
 
   while (!glfwWindowShouldClose(mainWindow_)) {
+    sceneManager_.prepareFrame();
     Scene *currentScene = sceneManager_.currentScene();
 
     glfwPollEvents();
@@ -299,6 +299,8 @@ void Application::run() {
       glfwSwapBuffers(mainWindow_);
       frameSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     }
+
+    sceneManager_.endFrame();
   }
   glDeleteQueries(2, queryID);
 }

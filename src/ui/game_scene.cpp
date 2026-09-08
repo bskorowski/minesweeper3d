@@ -4,17 +4,7 @@
 #include "imgui.h"
 #include "logzy/logzy.hpp"
 #include "math/matrix.hpp"
-
-namespace {
-constexpr v2u getWindowSize() {
-  // TODO :: Also this when refactorin window wrapper
-  v2i dimensions;
-  glfwGetWindowSize(Application::getWindow(), &dimensions.x(), &dimensions.y());
-  DEBUG_ASSERT(dimensions.x() > 0 && dimensions.y() > 0,
-               "Failed to fetch window dimensions");
-  return castAs<uint32_t>(dimensions);
-}
-} // namespace
+#include "ui_utils.hpp"
 
 constexpr v2u crosshairSize = vec2(10u, 10u);
 constexpr v3f crosshairColorNormalizedRGB = vec3(0.0f, 0.0f, 1.0f);
@@ -29,6 +19,8 @@ GameScene::GameScene()
     logzy::critical("Couldn't create board with size: {}", BOARD_SIZE);
     throw std::runtime_error(std::format("Couldnt' generate board"));
   }
+
+  glfwSetInputMode(Application::getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void GameScene::handleInputs() {
@@ -155,8 +147,6 @@ static void drawPauseMenu() {
     flags |= ImGuiWindowFlags_NoCollapse;
     flags |= ImGuiWindowFlags_NoResize;
     flags |= ImGuiWindowFlags_NoMove;
-    // flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
-    // flags |= ImGuiWindowFlags_NoNavFocus;
     ImGui::Begin("Settings", nullptr, flags);
 
     ImGui::SetWindowFontScale(3.0f);
@@ -208,8 +198,8 @@ static void drawPauseMenu() {
       ImGui::Text("%s - %s", key, description);
     }
 
-    if (ImGui::Button("Exit")) {
-      glfwSetWindowShouldClose(window, true);
+    if (ImGui::Button("Back to menu")) {
+      Application::getSceneManager().navigateBack();
     }
     ImGui::End();
   }
