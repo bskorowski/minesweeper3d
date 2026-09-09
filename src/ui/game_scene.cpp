@@ -141,8 +141,7 @@ void GameScene::updateAndDrawUI() {
   crosshair_.draw(ortho);
 
   if (profilerMenuOpen_) {
-    // TODO :: Render profiler data
-    // drawRenderData(profilerData_);
+    Application::getProfilerData().draw();
   }
 
   if (pauseMenuOpen_) {
