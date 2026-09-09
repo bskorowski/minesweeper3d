@@ -9,7 +9,7 @@ class GameScene final : public Scene {
 
 public:
   GameScene();
-  ~GameScene() = default;
+  ~GameScene();
   void handleInputs() override;
   void update() override;
   void draw() override;

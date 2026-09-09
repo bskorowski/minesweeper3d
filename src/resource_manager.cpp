@@ -9,12 +9,18 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-auto ResourceManager::loadTexture(std::string_view assetPath,
+auto ResourceManager::loadTexture(ResourceKey resourceKey,
+                                  std::string_view assetPath,
                                   TextureParams params,
                                   std::filesystem::path basePath) -> bool {
 
+  if (textures_.contains(resourceKey)) {
+    logzy::debug("Texture already loaded: '{}'", resourceKey);
+    return true;
+  }
+
   std::filesystem::path fullPath = basePath / assetPath;
-  DEBUG_ONLY(logzy::info("Loading texture at: '{}'", fullPath));
+  logzy::info("Loading texture at: '{}'", fullPath);
 
   if (!verifyPath(fullPath)) {
     return false;
@@ -43,34 +49,41 @@ auto ResourceManager::loadTexture(std::string_view assetPath,
   Texture texture(data, width, height);
   texture.generateMipMaps();
 
-  ResourceManager::textures_.emplace(fullPath.string(), std::move(texture));
+  ResourceManager::textures_.emplace(resourceKey, std::move(texture));
   //
   stbi_image_free(data);
   return true;
 }
 
-auto ResourceManager::getTexture(std::string_view assetPath,
-                                 std::filesystem::path basePath)
-    -> const Texture & {
+auto ResourceManager::unloadTexture(ResourceKey resourceKey) -> bool {
+  DEBUG_ASSERT(
+      textures_.contains(resourceKey),
+      std::format("Texture '{}' must be loaded to unload it", resourceKey));
 
-  std::filesystem::path fullPath = basePath / assetPath;
-
-  std::string key = fullPath.string();
-
-  auto it = ResourceManager::textures_.find(key);
-  DEBUG_ONLY(if (it == ResourceManager::textures_.end()) {
-    throw std::runtime_error(
-        std::format("Trying to use texture '{}' that was not loaded", key));
-  });
-
-  return it->second;
+  if (!textures_.erase(resourceKey)) {
+    logzy::warn("Couldn't unload texture {}", resourceKey);
+    return false;
+  }
+  logzy::trace("Unloaded texture {}", resourceKey);
+  return true;
 }
 
-auto ResourceManager::loadTextureArray(std::string_view arrayName,
-                                       std::span<std::string_view> paths,
+auto ResourceManager::getTexture(ResourceKey resourceKey) -> const Texture & {
+  DEBUG_ASSERT(
+      textures_.contains(resourceKey),
+      std::format("Texture '{}' must be loaded to use it", resourceKey));
+  return textures_.at(resourceKey);
+}
+
+auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
+                                       std::span<const std::string_view> paths,
                                        TextureParams params,
                                        std::filesystem::path basePath) -> bool {
 
+  if (textureArrays_.contains(resourceKey)) {
+    logzy::debug("Texture already loaded: '{}'", resourceKey);
+    return true;
+  }
   DEBUG_ASSERT(paths.size() > 0);
 
   int layer = 0;
@@ -97,7 +110,6 @@ auto ResourceManager::loadTextureArray(std::string_view arrayName,
                std::format("channels={} desired={}", referenceChannels,
                            desiredChannels));
 
-  DEBUG_ASSERT(!textureArrays_.contains(arrayName), arrayName);
   TextureArray array(referenceWidth, referenceHeight, paths.size() + 1, params);
   array.bind();
 
@@ -134,22 +146,29 @@ auto ResourceManager::loadTextureArray(std::string_view arrayName,
     stbi_image_free(data);
   }
 
-  ResourceManager::textureArrays_.emplace(std::string(arrayName),
-                                          std::move(array));
-
+  ResourceManager::textureArrays_.emplace(resourceKey, std::move(array));
   return true;
 }
 
-auto ResourceManager::getTextureArray(std::string_view arrayName)
+auto ResourceManager::unloadTextureArray(ResourceKey resourceKey) -> bool {
+  DEBUG_ASSERT(textureArrays_.contains(resourceKey),
+               std::format("Texture array '{}' must be loaded to unload it",
+                           resourceKey));
+
+  if (!textureArrays_.erase(resourceKey)) {
+    logzy::warn("Couldn't unload texture array {}", resourceKey);
+    return false;
+  }
+  logzy::trace("Unloaded texture array {}", resourceKey);
+  return true;
+}
+
+auto ResourceManager::getTextureArray(ResourceKey resourceKey)
     -> const TextureArray & {
-  DEBUG_ASSERT(ResourceManager::textureArrays_.contains(arrayName), arrayName);
-
-  auto it = ResourceManager::textureArrays_.find(arrayName);
-  DEBUG_ONLY(if (it == ResourceManager::textureArrays_.end()) {
-    throw std::runtime_error("Trying to acces unloaded texture array");
-  });
-
-  return it->second;
+  DEBUG_ASSERT(
+      textureArrays_.contains(resourceKey),
+      std::format("Texture '{}' must be loaded to use it", resourceKey));
+  return textureArrays_.at(resourceKey);
 }
 
 auto ResourceManager::verifyPath(std::filesystem::path path) noexcept -> bool {

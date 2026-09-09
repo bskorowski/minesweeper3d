@@ -28,9 +28,10 @@ void Board::draw(const m4x4f &view, const m4x4f &projection) {
   shaderProgram.setInt(textureLoc_, 0);
 
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(
-      GL_TEXTURE_2D_ARRAY,
-      ResourceManager::getTextureArray(ResourceManager::TileTexturesKey).ID);
+  glBindTexture(GL_TEXTURE_2D_ARRAY,
+                ResourceManager::getTextureArray(
+                    ResourceManager::ResourceKey::TileTextureArray)
+                    .ID);
 
   if (opaqueInstancesToDraw > 0) {
     glBindVertexArray(opaqueVertexArrayID);
@@ -350,6 +351,7 @@ void Board::loadUniformLocations() {
     }
   }
 }
+
 void Board::loadCubeMesh(const std::span<const v3f> mesh,
                          const std::span<const v2f> textureCoords) {
 
