@@ -4,10 +4,33 @@
 #include "imgui.h"
 #include "logzy/logzy.hpp"
 #include "math/matrix.hpp"
+#include "resource_manager.hpp"
 #include "ui_utils.hpp"
 
 constexpr v2u crosshairSize = vec2(10u, 10u);
 constexpr v3f crosshairColorNormalizedRGB = vec3(0.0f, 0.0f, 1.0f);
+
+static void loadTextures() {
+  std::array<std::string_view, 29> paths{
+      "tiles/tile_0.jpg",    "tiles/tile_1.jpg",   "tiles/tile_2.jpg",
+      "tiles/tile_3.jpg",    "tiles/tile_4.jpg",   "tiles/tile_5.jpg",
+      "tiles/tile_6.jpg",    "tiles/tile_7.jpg",   "tiles/tile_8.jpg",
+      "tiles/tile_9.jpg",    "tiles/tile_10.jpg",  "tiles/tile_11.jpg",
+      "tiles/tile_12.jpg",   "tiles/tile_13.jpg",  "tiles/tile_14.jpg",
+      "tiles/tile_15.jpg",   "tiles/tile_16.jpg",  "tiles/tile_17.jpg",
+      "tiles/tile_18.jpg",   "tiles/tile_19.jpg",  "tiles/tile_20.jpg",
+      "tiles/tile_21.jpg",   "tiles/tile_22.jpg",  "tiles/tile_23.jpg",
+      "tiles/tile_24.jpg",   "tiles/tile_25.jpg",  "tiles/tile_26.jpg",
+      "tiles/tile_flag.jpg", "tiles/tile_bomb.jpg"};
+
+  if (ResourceManager::loadTextureArray(ResourceManager::TileTexturesKey,
+                                        std::span{paths})) {
+    logzy::info("Loaded texture array: {}", ResourceManager::TileTexturesKey);
+  } else {
+    logzy::critical("Failed to load texture: {}",
+                    ResourceManager::TileTexturesKey);
+  }
+}
 
 GameScene::GameScene()
     : crosshair_{getWindowSize(), crosshairSize, crosshairColorNormalizedRGB} {
@@ -19,8 +42,8 @@ GameScene::GameScene()
     logzy::critical("Couldn't create board with size: {}", BOARD_SIZE);
     throw std::runtime_error(std::format("Couldnt' generate board"));
   }
-
   glfwSetInputMode(Application::getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  loadTextures();
 }
 
 void GameScene::handleInputs() {

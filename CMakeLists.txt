@@ -23,6 +23,11 @@ FetchContent_MakeAvailable(logzy glfw)
 add_library(
    minesweeper3d-lib
 
+   ./src/application.cpp
+   ./src/application.cpp
+   ./src/profiling.hpp
+   ./src/profiling.cpp
+
    ./src/game/board.cpp
    ./src/game/board.hpp
    ./src/game/crosshair.cpp
@@ -45,8 +50,6 @@ add_library(
    ./src/render/texture.cpp
    ./src/render/texture.hpp
 
-   ./src/application.cpp
-   ./src/application.cpp
 
    ./src/ui/scene.cpp
    ./src/ui/scene.hpp

@@ -1,50 +1,20 @@
 #include "application.hpp"
 
-#include <GLFW/glfw3.h>
-#include <logzy/logzy.hpp>
-#include <set>
-#include <system_error>
-
 #include "debug_utils.hpp"
-#include "game/board.hpp"
-#include "game/crosshair.hpp"
 #include "glad.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "profiling.hpp"
-#include "render/camera.hpp"
-#include "resource_manager.hpp"
 #include "settings.hpp"
-#include "ui/game_scene.hpp"
 #include "ui/main_menu_scene.hpp"
 #include "ui/scene.hpp"
+#include <GLFW/glfw3.h>
+#include <logzy/logzy.hpp>
 
 static void GLFWErrorCallback(int code, const char *description) {
   logzy::error("GLFW Error occurred. Code {}. Description: {}", code,
                description);
-}
-
-static void loadTextures() {
-  std::array<std::string_view, 29> paths{
-      "tiles/tile_0.jpg",    "tiles/tile_1.jpg",   "tiles/tile_2.jpg",
-      "tiles/tile_3.jpg",    "tiles/tile_4.jpg",   "tiles/tile_5.jpg",
-      "tiles/tile_6.jpg",    "tiles/tile_7.jpg",   "tiles/tile_8.jpg",
-      "tiles/tile_9.jpg",    "tiles/tile_10.jpg",  "tiles/tile_11.jpg",
-      "tiles/tile_12.jpg",   "tiles/tile_13.jpg",  "tiles/tile_14.jpg",
-      "tiles/tile_15.jpg",   "tiles/tile_16.jpg",  "tiles/tile_17.jpg",
-      "tiles/tile_18.jpg",   "tiles/tile_19.jpg",  "tiles/tile_20.jpg",
-      "tiles/tile_21.jpg",   "tiles/tile_22.jpg",  "tiles/tile_23.jpg",
-      "tiles/tile_24.jpg",   "tiles/tile_25.jpg",  "tiles/tile_26.jpg",
-      "tiles/tile_flag.jpg", "tiles/tile_bomb.jpg"};
-
-  if (ResourceManager::loadTextureArray(ResourceManager::TileTexturesKey,
-                                        std::span{paths})) {
-    logzy::info("Loaded texture array: {}", ResourceManager::TileTexturesKey);
-  } else {
-    logzy::critical("Failed to load texture: {}",
-                    ResourceManager::TileTexturesKey);
-  }
 }
 
 static auto initializeGLFW() -> bool {
@@ -97,7 +67,6 @@ static auto initializeMainGLFWWindow(GLFWwindow *window) -> bool {
 
 static void intializeOpenGL(GLFWwindow *window) {
   // TODO :: In theory these could fail too
-
   // OpenGL stuff
   glfwMakeContextCurrent(window);
   gladLoadGL(glfwGetProcAddress);
@@ -154,93 +123,30 @@ auto Application::initialize() -> bool {
   intializeOpenGL(mainWindow_);
   initializeDearImgui(mainWindow_);
 
-  // TODO :: Later scenes should load assets they need
-  loadTextures();
-
   sceneManager_.navigateTo(std::make_unique<MainMenuScene>());
   return true;
 }
 
-void drawRenderData(const ProfilerData &data) {
-
-  ImGui::SetNextWindowPos({0, 0});
-  ImGuiWindowFlags flags = 0;
-  flags |= ImGuiWindowFlags_NoTitleBar;
-  flags |= ImGuiWindowFlags_NoCollapse;
-  flags |= ImGuiWindowFlags_NoResize;
-  flags |= ImGuiWindowFlags_NoMove;
-  flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
-  flags |= ImGuiWindowFlags_NoNavFocus;
-  flags |= ImGuiWindowFlags_AlwaysAutoResize;
-
-  ImGui::Begin("Frame data", nullptr, flags);
-
-  ImGui::Text("FPS: %d",
-              static_cast<std::uint32_t>(1.0 / data.totalFrameMs * 1000.0));
-  ImGui::Text("Frame time [ms]: %.3f", data.totalFrameMs);
-  ImGui::Text("CPU update time [ms]: %.3f", data.updateMs);
-  ImGui::Text("CPU Render time [ms]: %.3f", data.cpuRenderMs);
-  ImGui::Text("GPU Render time [ms]: %.3f", data.gpuRenderMs);
-  ImGui::Text("UI Update time [ms]: %.3f", data.uiUpdateMs);
-  ImGui::Text("UI Render time [ms]: %.3f", data.uiRenderMs);
-  ImGui::Text("Wait  time [ms]: %.3f", data.waitTime);
-  ImGui::Text("Frame number: %llu", data.frameCounter);
-
-  ImGui::End();
-}
-
 void Application::run() {
-
-  // Configs
-  constexpr v3f cameraInitialPosition = vec3<float>(.0F, .0F, 20.0F);
-  constexpr v3f cameraArbitraryUp = vec3<float>(0.0F, 1.0F, 0.0F);
-
-  bool menuOpen{false};
-  Settings settings;
-
-  // TODO :: Not paying too much attention to this as it will be refactored
-  // into scenes later
-  Board board;
-  constexpr size_t BOARD_SIZE{10};
-  if (auto boardOpt = Board::create(v3uz{BOARD_SIZE, BOARD_SIZE, BOARD_SIZE})) {
-    board = std::move(*boardOpt);
-  } else {
-    logzy::critical("Couldn't create board");
-    return;
-  }
-
-  Camera camera(cameraInitialPosition, cameraArbitraryUp);
-  v2d mousePos;
-  glfwGetCursorPos(mainWindow_, &(mousePos.data[0][0]), &(mousePos.data[0][1]));
-  double lastTime = glfwGetTime();
-  // Profilers
-
   // triple buffering
   constexpr int queryBuffers = 3;
   GLuint queryID[queryBuffers];
   glGenQueries(queryBuffers, queryID);
-
   printf("queryID[0]=%u queryID[1]=%u\n", queryID[0], queryID[1]);
-
-  bool profilerMenuOpen{false};
-  ProfilerData profilerData{};
   static GLsync frameSync = nullptr;
 
-  Scene *currentScene = nullptr;
-
+  Timer deltaTimer{};
   while (!glfwWindowShouldClose(mainWindow_)) {
     sceneManager_.prepareFrame();
+    deltaTime_ = deltaTimer.reset();
     Scene *currentScene = sceneManager_.currentScene();
-
     glfwPollEvents();
     input_.update(mainWindow_);
 
     double time = static_cast<float>(glfwGetTime());
-    Application::deltaTime_ = time - lastTime;
-    lastTime = time;
-    ++profilerData.frameCounter;
+    ++profilerData_.frameCounter;
     {
-      ScopedTimer waitTimer(profilerData.waitTime);
+      ScopedTimer waitTimer(profilerData_.waitTime);
       if (frameSync) {
         glClientWaitSync(frameSync, GL_SYNC_FLUSH_COMMANDS_BIT, 1000000000);
         glDeleteSync(frameSync);
@@ -249,20 +155,20 @@ void Application::run() {
     }
 
     // Seconds to ms
-    profilerData.totalFrameMs = Application::getDeltaTime() * 1000.0;
+    profilerData_.totalFrameMs = Application::getDeltaTime() * 1000.0;
     {
-      ScopedTimer updateTimer(profilerData.updateMs);
+      ScopedTimer updateTimer(profilerData_.updateMs);
       currentScene->handleInputs();
       currentScene->update();
     }
 
     {
-      ScopedTimer renderTimer(profilerData.cpuRenderMs);
+      ScopedTimer renderTimer(profilerData_.cpuRenderMs);
       // Writing
-      const int frontBuffer = profilerData.frameCounter % queryBuffers;
+      const int frontBuffer = profilerData_.frameCounter % queryBuffers;
       // Reading buffer delayed by queryBuffers-1 frames
       const int backBuffer =
-          (profilerData.frameCounter - (queryBuffers - 1) + queryBuffers) %
+          (profilerData_.frameCounter - (queryBuffers - 1) + queryBuffers) %
           queryBuffers;
 
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -275,15 +181,15 @@ void Application::run() {
       glGetQueryObjectuiv(queryID[backBuffer], GL_QUERY_RESULT_AVAILABLE,
                           &available);
 
-      if (profilerData.frameCounter >= 3 && available) {
+      if (profilerData_.frameCounter >= 3 && available) {
         GLuint64 nanosElapsed = 0;
         glGetQueryObjectui64v(queryID[backBuffer], GL_QUERY_RESULT,
                               &nanosElapsed);
-        profilerData.gpuRenderMs = nanosElapsed / 1'000'000.0;
+        profilerData_.gpuRenderMs = nanosElapsed / 1'000'000.0;
       }
     }
     {
-      ScopedTimer uiTimer(profilerData.uiUpdateMs);
+      ScopedTimer uiTimer(profilerData_.uiUpdateMs);
       ImGui_ImplOpenGL3_NewFrame();
       ImGui_ImplGlfw_NewFrame();
       ImGui::NewFrame();
@@ -291,11 +197,11 @@ void Application::run() {
       ImGui::Render();
     }
     {
-      ScopedTimer uiTimer(profilerData.uiRenderMs);
+      ScopedTimer uiTimer(profilerData_.uiRenderMs);
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
     {
-      ScopedTimer systemTimer(profilerData.waitTime);
+      ScopedTimer systemTimer(profilerData_.waitTime);
       glfwSwapBuffers(mainWindow_);
       frameSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     }
@@ -325,14 +231,18 @@ auto Application::shutdown() -> bool {
   return true;
 }
 
-auto Application::getDeltaTime() -> float { return deltaTime_; }
+auto Application::getDeltaTime() noexcept -> double { return deltaTime_; }
 
-auto Application::getWindow() -> GLFWwindow * { return mainWindow_; }
+auto Application::getWindow() noexcept -> GLFWwindow * { return mainWindow_; }
 
-auto Application::getInput() -> Input & { return Application::input_; }
+auto Application::getInput() noexcept -> const Input & { return input_; }
 
-auto Application::getSceneManager() -> SceneManager & {
-  return Application::sceneManager_;
+auto Application::getProfilerData() noexcept -> const ProfilerData & {
+  return profilerData_;
 }
 
-auto Application::getSettings() -> Settings & { return Application::settings_; }
+auto Application::getSceneManager() noexcept -> SceneManager & {
+  return sceneManager_;
+}
+
+auto Application::getSettings() noexcept -> Settings & { return settings_; }
