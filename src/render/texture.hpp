@@ -1,4 +1,5 @@
 #pragma once
+#include "core.hpp"
 #include "glad.h"
 #include <cstdint>
 
@@ -20,23 +21,32 @@ struct TextureParams {
 struct Texture {
 
 public:
-  constexpr Texture() noexcept = default;
   // Creates a texture from given data. assumes the data is a valid buffer.
   // RGB only
   Texture(std::uint8_t *data, int width, int height,
           TextureParams params = {}) noexcept;
+  constexpr Texture() noexcept = default;
+  Texture(Texture &&);
+  Texture &operator=(Texture &&);
+  Texture(const Texture &) = delete;
+  Texture &operator=(const Texture &) = delete;
+  ~Texture();
   void generateMipMaps();
 
 public:
-  GLuint ID = -1;
+  GLuint ID = render::UNSET;
 };
 
 struct TextureArray {
 public:
-  constexpr TextureArray() noexcept = default;
-
   TextureArray(int width, int height, int layers,
                TextureParams params = {}) noexcept;
+  constexpr TextureArray() noexcept = default;
+  TextureArray(TextureArray &&);
+  TextureArray &operator=(TextureArray &&);
+  TextureArray(const TextureArray &) = delete;
+  TextureArray &operator=(const TextureArray &) = delete;
+  ~TextureArray() noexcept;
 
   void bind();
 
@@ -47,8 +57,7 @@ public:
   void generateMipMaps();
 
 public:
-  GLuint ID = -1;
-
-  int width = -1;
-  int height = -1;
+  GLuint ID = render::UNSET;
+  int width = render::UNSET;
+  int height = render::UNSET;
 };

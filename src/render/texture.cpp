@@ -1,6 +1,7 @@
 #include "texture.hpp"
 #include "debug_utils.hpp"
 #include "glad.h"
+#include "render/core.hpp"
 #include <logzy/logzy.hpp>
 #include <utility>
 
@@ -44,6 +45,23 @@ Texture::Texture(std::uint8_t *data, int width, int height,
                GL_UNSIGNED_BYTE, data);
 }
 
+Texture::Texture(Texture &&other) {
+  ID = other.ID;
+  other.ID = render::UNSET;
+}
+
+Texture &Texture::operator=(Texture &&other) {
+  ID = other.ID;
+  other.ID = render::UNSET;
+  return *this;
+}
+
+Texture::~Texture() {
+  if (ID != render::UNSET) {
+    glDeleteTextures(1, &ID);
+  }
+}
+
 void Texture::generateMipMaps() {
   ASSERT_BOUND(GL_TEXTURE_2D, ID);
   glGenerateMipmap(GL_TEXTURE_2D);
@@ -66,6 +84,30 @@ TextureArray::TextureArray(int width, int height, int layers,
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, params.verticalWrap);
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, params.minFilter);
   glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, params.magFilter);
+}
+
+TextureArray::TextureArray(TextureArray &&other)
+    : ID{other.ID}, width{other.width}, height{other.height} {
+  other.ID = render::UNSET;
+  other.width = render::UNSET;
+  other.height = render::UNSET;
+}
+
+TextureArray &TextureArray::operator=(TextureArray &&other) {
+  ID = other.ID;
+  width = other.width;
+  height = other.height;
+
+  other.ID = render::UNSET;
+  other.width = render::UNSET;
+  other.height = render::UNSET;
+  return *this;
+}
+
+TextureArray::~TextureArray() noexcept {
+  if (ID != render::UNSET) {
+    glDeleteTextures(1, &ID);
+  }
 }
 
 void TextureArray::bind() { glBindTexture(GL_TEXTURE_2D_ARRAY, ID); }
