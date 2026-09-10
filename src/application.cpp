@@ -6,6 +6,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "profiling.hpp"
+#include "resource_manager.hpp"
 #include "settings.hpp"
 #include "ui/main_menu_scene.hpp"
 #include "ui/scene.hpp"
@@ -124,6 +125,13 @@ auto Application::initialize() -> bool {
   initializeDearImgui(mainWindow_);
 
   sceneManager_.navigateTo(std::make_unique<MainMenuScene>());
+  ResourceManager::loadFont(ResourceManager::ResourceKey::FontRegular,
+                            "fonts/michroma/Michroma-Regular.ttf");
+
+  ImGui::PushFont(static_cast<ImFont *>(
+      ResourceManager::getFont(ResourceManager::ResourceKey::FontRegular)
+          .fontData));
+
   return true;
 }
 

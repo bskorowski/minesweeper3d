@@ -1,5 +1,6 @@
 #pragma once
 #include "debug_utils.hpp"
+#include "render/font.hpp"
 #include "render/texture.hpp"
 #include <filesystem>
 #include <span>
@@ -8,11 +9,12 @@
 
 struct ResourceManager {
 
+  // TODO :: Function to unload all.
   // TODO :: Split Resource key for each resource type
   // TODO :: refactor raw references to shared pointers, as unloading may invoke
   // use-after-free
 
-  enum class ResourceKey { TileTextureArray };
+  enum class ResourceKey { FontRegular, TileTextureArray };
   inline static std::filesystem::path BASE_ASSET_PATH{"assets"};
 
   /**
@@ -41,11 +43,20 @@ struct ResourceManager {
 
   static auto getTextureArray(ResourceKey resourceKey) -> const TextureArray &;
 
+  static auto loadFont(ResourceKey resourceKey, std::string_view fontPath,
+                       std::filesystem::path basePath = BASE_ASSET_PATH)
+      -> bool;
+
+  static auto getFont(ResourceKey resourceKey) -> const Font &;
+  static auto unloadFont(ResourceKey resourceKey) -> bool;
+
 private:
   static auto verifyPath(std::filesystem::path path) noexcept -> bool;
 
   inline static std::unordered_map<ResourceKey, Texture> textures_;
   inline static std::unordered_map<ResourceKey, TextureArray> textureArrays_;
+
+  inline static std::unordered_map<ResourceKey, Font> fonts_;
 };
 
 template <> struct std::formatter<ResourceManager::ResourceKey> {
@@ -59,7 +70,8 @@ template <> struct std::formatter<ResourceManager::ResourceKey> {
                               FmtContext &ctx) const {
     using Key = ResourceManager::ResourceKey;
     static std::unordered_map<Key, std::string_view> mappings{
-        {Key::TileTextureArray, "TileTextureArray"}};
+        {Key::TileTextureArray, "TileTextureArray"},
+        {Key::FontRegular, "FontRegular"}};
     DEBUG_ASSERT(mappings.contains(key),
                  "No string representation defined for "
                  "ResourceManager::ResourceKey with int value = {}",

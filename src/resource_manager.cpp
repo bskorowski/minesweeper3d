@@ -1,5 +1,6 @@
 #include "resource_manager.hpp"
 #include "debug_utils.hpp"
+#include "imgui.h"
 #include "render/texture.hpp"
 #include <filesystem>
 #include <logzy/logzy.hpp>
@@ -120,7 +121,7 @@ auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
 
   for (std::string_view pathPart : paths) {
     std::filesystem::path currentPath = basePath / pathPart;
-    DEBUG_ONLY(logzy::info("Loading texture at: '{}'", currentPath));
+    logzy::info("Loading texture at: '{}'", currentPath);
     if (!verifyPath(currentPath)) {
       logzy::critical("Texture not found: {}, couldn't load layer: {}",
                       currentPath.string().c_str(), layer++);
@@ -178,4 +179,50 @@ auto ResourceManager::verifyPath(std::filesystem::path path) noexcept -> bool {
   }
 
   return true;
+}
+
+auto ResourceManager::loadFont(ResourceKey resourceKey,
+                               std::string_view fontPath,
+                               std::filesystem::path basePath) -> bool {
+  DEBUG_ASSERT(
+      resourceKey == ResourceKey::FontRegular,
+      std::format("Are you sure the {} is really a font?", resourceKey));
+
+  std::filesystem::path assetPath = basePath / fontPath;
+  logzy::debug("Loading font at: {}", assetPath);
+  if (!verifyPath(assetPath)) {
+    logzy::warn("Couldn't locate font at '{}'", assetPath);
+    return false;
+  }
+
+  if (fonts_.contains(resourceKey)) {
+    logzy::debug("Font already loaded");
+    return true;
+  }
+
+  Font font;
+  ImGuiIO &io = ImGui::GetIO();
+  font.fontData =
+      io.Fonts->AddFontFromFileTTF(assetPath.string().c_str(), 12.0f);
+  if (!font.fontData) {
+    logzy::error("Couldn't load font '{}'", assetPath);
+  }
+  io.Fonts->Build();
+
+  fonts_.emplace(resourceKey, std::move(font));
+  return true;
+}
+
+auto ResourceManager::getFont(ResourceKey resourceKey) -> const Font & {
+  DEBUG_ASSERT(resourceKey == ResourceKey::FontRegular,
+               std::format("are you sure '{}' is really a font?", resourceKey));
+  DEBUG_ASSERT(fonts_.contains(resourceKey),
+               std::format("Font '{}' must be loaded to use it", resourceKey));
+  return fonts_.at(resourceKey);
+}
+
+auto ResourceManager::unloadFont(ResourceKey resourceKey) -> bool {
+  logzy::warn("Unloading fonts not yet implemented as fonts are used just in "
+              "ImGui and we cannot unload a single font.");
+  return false;
 }
