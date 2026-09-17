@@ -6737,3 +6737,4 @@ static const char* GetDefaultCompressedFontDataProggyForever(int* out_size)
 #endif // #ifndef IMGUI_DISABLE_DEFAULT_FONT
 
 #endif // #ifndef IMGUI_DISABLE
+

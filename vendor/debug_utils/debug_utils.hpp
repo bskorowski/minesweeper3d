@@ -31,7 +31,7 @@ constexpr bool DEBUG = false; // NOLINT
 
 #define GET_FIRST(First, ...) First // NOLINT
 
-#define DEBUG_ASSERT(expr, ...)                                                \
+#define ASSERT(expr, ...)                                                \
   (static_cast<bool>(expr)                                                     \
        ? void(0)                                                               \
        : handleAssertFail(#expr, GET_FIRST(__VA_ARGS__ __VA_OPT__(, ) "")));
@@ -43,6 +43,7 @@ constexpr bool DEBUG = true; // NOLINT
 } // namespace debugutils
 
 #define DEBUG_ONLY(...)
-#define DEBUG_ASSERT(...)
+#define ASSERT(...)
 
 #endif
+

@@ -151,7 +151,7 @@ void GameScene::draw() {
   constexpr float far = 100.0f;
   const float ratio = static_cast<float>(windowSize.x()) / windowSize.y();
   auto persp = perspective(fov, ratio, near, far);
-  DEBUG_ASSERT(ratio > 0.0f, "Ratio must be positive");
+  ASSERT(ratio > 0.0f, "Ratio must be positive");
 
   board_.draw(camera_.getView(), persp);
 };
@@ -250,3 +250,4 @@ static void drawPauseMenu() {
     ImGui::End();
   }
 }
+

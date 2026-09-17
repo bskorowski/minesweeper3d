@@ -30,3 +30,4 @@ private:
   inline static Settings settings_{};
   inline static ProfilerData profilerData_{};
 };
+

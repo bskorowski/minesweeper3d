@@ -181,3 +181,4 @@ bool Program::setInt(const std::string &name, int value) const {
 void Program::setInt(GLint location, int value) const {
   glUniform1i(location, value);
 }
+

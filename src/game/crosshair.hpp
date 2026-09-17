@@ -19,3 +19,4 @@ private:
   GLuint vao = -1;
   GLuint vbo = -1;
 };
+

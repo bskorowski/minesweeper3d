@@ -61,3 +61,4 @@ public:
   int width = render::UNSET;
   int height = render::UNSET;
 };
+

@@ -54,9 +54,9 @@ static auto createGLFWWindow() -> GLFWwindow * {
 
 static auto initializeMainGLFWWindow(GLFWwindow *window) -> bool {
   // Callbacks
-  DEBUG_ASSERT(glfwSetErrorCallback(nullptr) == nullptr,
+  ASSERT(glfwSetErrorCallback(nullptr) == nullptr,
                "Making sure no duplicate error callback is set");
-  DEBUG_ASSERT(glfwSetKeyCallback(window, nullptr) == nullptr,
+  ASSERT(glfwSetKeyCallback(window, nullptr) == nullptr,
                "Making sure no duplicate key callback is set");
 
   // TODO :: In theory these could fail too
@@ -254,3 +254,4 @@ auto Application::getSceneManager() noexcept -> SceneManager & {
 }
 
 auto Application::getSettings() noexcept -> Settings & { return settings_; }
+

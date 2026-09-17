@@ -11,3 +11,4 @@ struct Color {
   inline static v3f DarkGray{0.1F, 0.1F, 0.1F};
   inline static v3f Black{0.0F, 0.0F, 0.0F};
 };
+

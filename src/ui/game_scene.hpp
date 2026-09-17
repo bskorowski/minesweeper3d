@@ -35,3 +35,4 @@ private:
   // Game state
   Board board_{};
 };
+

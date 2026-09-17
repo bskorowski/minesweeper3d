@@ -44,3 +44,4 @@ double Timer::reset() noexcept {
   time_ = newTime;
   return secondsElapsed;
 }
+

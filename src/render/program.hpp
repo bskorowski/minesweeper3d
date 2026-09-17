@@ -41,3 +41,4 @@ struct Program {
   // Assumes location is valid
   void setInt(GLint location, int value) const;
 };
+

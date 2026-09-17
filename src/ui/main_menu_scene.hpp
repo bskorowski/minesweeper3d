@@ -8,3 +8,4 @@ public:
   virtual ~MainMenuScene() = default;
   void updateAndDrawUI() override;
 };
+

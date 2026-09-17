@@ -41,9 +41,9 @@ auto ResourceManager::loadTexture(ResourceKey resourceKey,
     logzy::critical("Couldn't find texture: {}", fullPath.string());
   }
 
-  DEBUG_ASSERT(width > 0, std::format("Actual width: {}", width));
-  DEBUG_ASSERT(height > 0, std::format("Actual width: {}", height));
-  DEBUG_ASSERT(
+  ASSERT(width > 0, std::format("Actual width: {}", width));
+  ASSERT(height > 0, std::format("Actual width: {}", height));
+  ASSERT(
       channels == desiredChannels,
       std::format("channels={} desired={}", channels, desiredChannels));
 
@@ -57,7 +57,7 @@ auto ResourceManager::loadTexture(ResourceKey resourceKey,
 }
 
 auto ResourceManager::unloadTexture(ResourceKey resourceKey) -> bool {
-  DEBUG_ASSERT(
+  ASSERT(
       textures_.contains(resourceKey),
       std::format("Texture '{}' must be loaded to unload it", resourceKey));
 
@@ -70,7 +70,7 @@ auto ResourceManager::unloadTexture(ResourceKey resourceKey) -> bool {
 }
 
 auto ResourceManager::getTexture(ResourceKey resourceKey) -> const Texture & {
-  DEBUG_ASSERT(
+  ASSERT(
       textures_.contains(resourceKey),
       std::format("Texture '{}' must be loaded to use it", resourceKey));
   return textures_.at(resourceKey);
@@ -85,7 +85,7 @@ auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
     logzy::debug("Texture already loaded: '{}'", resourceKey);
     return true;
   }
-  DEBUG_ASSERT(paths.size() > 0);
+  ASSERT(paths.size() > 0);
 
   int layer = 0;
   // Manually doing the first as a "blueprint" for height and width and channels
@@ -102,12 +102,12 @@ auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
   auto *data = stbi_load(currentPath.string().c_str(), &referenceWidth,
                          &referenceHeight, &referenceChannels, desiredChannels);
 
-  DEBUG_ASSERT(data != nullptr);
-  DEBUG_ASSERT(referenceWidth > 0,
+  ASSERT(data != nullptr);
+  ASSERT(referenceWidth > 0,
                std::format("Actual width: {}", referenceWidth));
-  DEBUG_ASSERT(referenceHeight > 0,
+  ASSERT(referenceHeight > 0,
                std::format("Actual width: {}", referenceHeight));
-  DEBUG_ASSERT(referenceChannels == desiredChannels,
+  ASSERT(referenceChannels == desiredChannels,
                std::format("channels={} desired={}", referenceChannels,
                            desiredChannels));
 
@@ -135,12 +135,12 @@ auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
     auto *data = stbi_load(currentPath.string().c_str(), &width, &height,
                            &channels, desiredChannels);
 
-    DEBUG_ASSERT(data != nullptr);
-    DEBUG_ASSERT(referenceWidth == width,
+    ASSERT(data != nullptr);
+    ASSERT(referenceWidth == width,
                  std::format("{} == {}", referenceWidth, width));
-    DEBUG_ASSERT(referenceHeight == height,
+    ASSERT(referenceHeight == height,
                  std::format("{} == {}", referenceHeight, height));
-    DEBUG_ASSERT(referenceChannels == channels,
+    ASSERT(referenceChannels == channels,
                  std::format("{} == {}", referenceChannels, channels));
 
     array.addTexture(data, layer++);
@@ -152,7 +152,7 @@ auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
 }
 
 auto ResourceManager::unloadTextureArray(ResourceKey resourceKey) -> bool {
-  DEBUG_ASSERT(textureArrays_.contains(resourceKey),
+  ASSERT(textureArrays_.contains(resourceKey),
                std::format("Texture array '{}' must be loaded to unload it",
                            resourceKey));
 
@@ -166,7 +166,7 @@ auto ResourceManager::unloadTextureArray(ResourceKey resourceKey) -> bool {
 
 auto ResourceManager::getTextureArray(ResourceKey resourceKey)
     -> const TextureArray & {
-  DEBUG_ASSERT(
+  ASSERT(
       textureArrays_.contains(resourceKey),
       std::format("Texture '{}' must be loaded to use it", resourceKey));
   return textureArrays_.at(resourceKey);
@@ -184,7 +184,7 @@ auto ResourceManager::verifyPath(std::filesystem::path path) noexcept -> bool {
 auto ResourceManager::loadFont(ResourceKey resourceKey,
                                std::string_view fontPath,
                                std::filesystem::path basePath) -> bool {
-  DEBUG_ASSERT(
+  ASSERT(
       resourceKey == ResourceKey::FontRegular,
       std::format("Are you sure the {} is really a font?", resourceKey));
 
@@ -214,9 +214,9 @@ auto ResourceManager::loadFont(ResourceKey resourceKey,
 }
 
 auto ResourceManager::getFont(ResourceKey resourceKey) -> const Font & {
-  DEBUG_ASSERT(resourceKey == ResourceKey::FontRegular,
+  ASSERT(resourceKey == ResourceKey::FontRegular,
                std::format("are you sure '{}' is really a font?", resourceKey));
-  DEBUG_ASSERT(fonts_.contains(resourceKey),
+  ASSERT(fonts_.contains(resourceKey),
                std::format("Font '{}' must be loaded to use it", resourceKey));
   return fonts_.at(resourceKey);
 }
@@ -226,3 +226,4 @@ auto ResourceManager::unloadFont(ResourceKey resourceKey) -> bool {
               "ImGui and we cannot unload a single font.");
   return false;
 }
+

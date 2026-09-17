@@ -23,3 +23,4 @@ enum class Error::Kind {
   WindowError,   // Window
   RuntimeError   // Any runtime error
 };
+

@@ -163,7 +163,7 @@ constexpr float Cell::getTextureIndex() const noexcept {
   if (state == Cell::State::Default) {
     return UNDUG_INDEX;
   }
-  DEBUG_ASSERT(bombsAround >= 0 && bombsAround <= 26,
+  ASSERT(bombsAround >= 0 && bombsAround <= 26,
                std::to_string(bombsAround));
   return static_cast<float>(bombsAround);
 }
@@ -202,3 +202,4 @@ template <> struct std::formatter<Cell::State, char> {
     return std::format_to(ctx.out(), "{}", mappings[state]);
   }
 };
+

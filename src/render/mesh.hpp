@@ -69,3 +69,4 @@ constexpr std::array<v2f,6> SQUARE_VERTICES {
 };
 
 // clang-format on
+

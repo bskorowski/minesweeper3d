@@ -19,8 +19,9 @@ struct AABB {
   /** Creates an AABB from element's center position and given size */
   [[nodiscard]] constexpr static auto fromCenterIn(v3f centerPosition,
                                                    v3f size) noexcept -> AABB {
-    DEBUG_ASSERT(size.x() > 0 && size.y() > 0 && size.z() > 0);
+    ASSERT(size.x() > 0 && size.y() > 0 && size.z() > 0);
 
     return AABB{.origin = centerPosition - (size * 0.5f), .size = size};
   }
 };
+

@@ -324,3 +324,4 @@ struct std::formatter<mat<T, Rows, Cols>, char> {
                           out);
   }
 };
+

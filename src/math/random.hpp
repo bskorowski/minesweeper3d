@@ -12,7 +12,7 @@ template <std::integral IntType>
 [[nodiscard]] constexpr std::vector<IntType>
 randomUniqueRange(IntType min, IntType max) noexcept {
 
-  DEBUG_ASSERT(min <= max);
+  ASSERT(min <= max);
 
   std::random_device seed;
   std::mt19937 rng{seed()};
@@ -26,3 +26,4 @@ randomUniqueRange(IntType min, IntType max) noexcept {
 
   return out;
 }
+

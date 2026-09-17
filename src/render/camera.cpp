@@ -1,13 +1,13 @@
 #include "camera.hpp"
 
 void Camera::move(v3f direction, float distance) {
-  DEBUG_ASSERT(direction.x() >= -1 && direction.x() <= 1,
+  ASSERT(direction.x() >= -1 && direction.x() <= 1,
                std::format("X component should be normalized, but is: {}",
                            direction.x()));
-  DEBUG_ASSERT(direction.y() >= -1 && direction.y() <= 1,
+  ASSERT(direction.y() >= -1 && direction.y() <= 1,
                std::format("Y component should be normalized, but is: {}",
                            direction.y()));
-  DEBUG_ASSERT(direction.z() >= -1 && direction.z() <= 1,
+  ASSERT(direction.z() >= -1 && direction.z() <= 1,
                std::format("Z component should be normalized, but is: {}",
                            direction.z()));
 
@@ -41,3 +41,4 @@ void Camera::updateDirection() {
   right = normalize(cross(reverseDirection, arbitraryUp));
   up = normalize(cross(right, reverseDirection));
 }
+

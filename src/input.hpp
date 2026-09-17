@@ -101,7 +101,7 @@ using GLFWMouseButton = int;
   const auto index = static_cast<size_t>(k);
   if (index >= map.size())
     return GLFW_KEY_UNKNOWN;
-  DEBUG_ASSERT(map[index] != GLFW_KEY_UNKNOWN,
+  ASSERT(map[index] != GLFW_KEY_UNKNOWN,
                std::format("Mapping should exist for key (int): {}",
                            static_cast<size_t>(k)));
   return map[index];
@@ -125,7 +125,7 @@ using GLFWMouseButton = int;
     }
   }
 
-  DEBUG_ASSERT(false, "All paths should be covered");
+  ASSERT(false, "All paths should be covered");
   std::unreachable();
 }
 
@@ -146,7 +146,7 @@ mouseButtonToGLFW(MouseButton button) noexcept {
   const auto index = static_cast<size_t>(button);
   if (index >= map.size())
     return GLFW_KEY_UNKNOWN;
-  DEBUG_ASSERT(map[index] != GLFW_KEY_UNKNOWN, "Mapping should exist");
+  ASSERT(map[index] != GLFW_KEY_UNKNOWN, "Mapping should exist");
   return map[index];
 }
 
@@ -169,7 +169,7 @@ struct Input {
       if (GLFWcode != GLFW_KEY_UNKNOWN) {
         bool isDown = glfwGetKey(window, GLFWcode) == GLFW_PRESS;
 
-        DEBUG_ASSERT(glfwGetKey(window, GLFWcode) == GLFW_PRESS ||
+        ASSERT(glfwGetKey(window, GLFWcode) == GLFW_PRESS ||
                          glfwGetKey(window, GLFWcode) == GLFW_RELEASE,
                      "glfwGetKey 'should' have only two states");
 
@@ -187,7 +187,7 @@ struct Input {
       if (GLFWcode != GLFW_KEY_UNKNOWN) {
         bool isDown = glfwGetMouseButton(window, GLFWcode) == GLFW_PRESS;
 
-        DEBUG_ASSERT(glfwGetMouseButton(window, GLFWcode) == GLFW_PRESS ||
+        ASSERT(glfwGetMouseButton(window, GLFWcode) == GLFW_PRESS ||
                          glfwGetMouseButton(window, GLFWcode) == GLFW_RELEASE,
                      "glfwGetKey 'should' have only two states");
 
@@ -260,3 +260,4 @@ private:
   v2d lastMousePosition{};
   v2d mousePosition{};
 };
+

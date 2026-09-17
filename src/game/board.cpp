@@ -16,7 +16,7 @@
 
 void Board::draw(const m4x4f &view, const m4x4f &projection) {
 
-  DEBUG_ASSERT(cells_.size() > 0 && cells_[0].size() > 0 &&
+  ASSERT(cells_.size() > 0 && cells_[0].size() > 0 &&
                    cells_[0][0].size() > 0,
                "Board is generated and has least one cell.");
 
@@ -200,7 +200,7 @@ Board::generateBoard(const v3uz dimensions, std::uint32_t bombs) {
 static constexpr void digDFS(std::vector<std::vector<std::vector<Cell>>> &cells,
                              size_t x, size_t y, size_t z) noexcept {
   auto &cell = cells[z][y][x];
-  DEBUG_ASSERT(cell.state == Cell::State::Default,
+  ASSERT(cell.state == Cell::State::Default,
                "Passed coordiantes shouldn't be dug or flagged "
                "(==Cell::State::Default)");
 
@@ -239,7 +239,7 @@ void Board::dig(v3uz coords) noexcept {
 
 void Board::flag(v3uz coords) noexcept {
 
-  DEBUG_ASSERT(cells_[coords.z()][coords.y()][coords.x()].state !=
+  ASSERT(cells_[coords.z()][coords.y()][coords.x()].state !=
                    Cell::State::Dug,
                "Cell that is dug cannot be flagged");
 
@@ -355,7 +355,7 @@ void Board::loadUniformLocations() {
 void Board::loadCubeMesh(const std::span<const v3f> mesh,
                          const std::span<const v2f> textureCoords) {
 
-  DEBUG_ASSERT(mesh.size() == textureCoords.size());
+  ASSERT(mesh.size() == textureCoords.size());
 
   GLuint buffers[2];
   glGenBuffers(2, buffers);
@@ -575,3 +575,4 @@ bool Board::setupVAO(GLuint &vertexArrayID, GLuint &cellInstanceBufferID) {
   glVertexAttribDivisor(vTextureIDLocation, 1);
   return true;
 }
+
