@@ -1,5 +1,5 @@
 #include "texture.hpp"
-#include "debug_utils.hpp"
+#include "debug.hpp"
 #include "glad.h"
 #include "render/core.hpp"
 #include <logzy/logzy.hpp>
@@ -127,4 +127,5 @@ void TextureArray::generateMipMaps() {
   ASSERT_BOUND(GL_TEXTURE_2D_ARRAY, ID);
   glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 }
+
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "debug_utils.hpp"
+#include "debug.hpp"
 #include "math/matrix.hpp"
 #include <GLFW/glfw3.h>
 #include <array>
@@ -260,4 +260,5 @@ private:
   v2d lastMousePosition{};
   v2d mousePosition{};
 };
+
 

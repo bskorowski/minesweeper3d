@@ -6,7 +6,7 @@
 #include <ranges>
 #include <unordered_map>
 
-#include "debug_utils.hpp"
+#include "debug.hpp"
 #include "glad.h"
 #include "math/intersections.hpp"
 #include "math/matrix.hpp"
@@ -575,4 +575,5 @@ bool Board::setupVAO(GLuint &vertexArrayID, GLuint &cellInstanceBufferID) {
   glVertexAttribDivisor(vTextureIDLocation, 1);
   return true;
 }
+
 

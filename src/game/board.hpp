@@ -2,7 +2,7 @@
 
 #include <span>
 
-#include "debug_utils.hpp"
+#include "debug.hpp"
 #include "glad.h"
 #include "math/matrix.hpp"
 #include "render/colors.hpp"
@@ -202,4 +202,5 @@ template <> struct std::formatter<Cell::State, char> {
     return std::format_to(ctx.out(), "{}", mappings[state]);
   }
 };
+
 

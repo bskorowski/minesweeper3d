@@ -42,3 +42,4 @@ struct Program {
   void setInt(GLint location, int value) const;
 };
 
+

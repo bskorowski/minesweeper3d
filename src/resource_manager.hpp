@@ -1,5 +1,5 @@
 #pragma once
-#include "debug_utils.hpp"
+#include "debug.hpp"
 #include "render/font.hpp"
 #include "render/texture.hpp"
 #include <filesystem>
@@ -79,4 +79,5 @@ template <> struct std::formatter<ResourceManager::ResourceKey> {
     return std::format_to(ctx.out(), "{}", mappings.at(key));
   }
 };
+
 

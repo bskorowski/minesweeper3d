@@ -96,3 +96,4 @@ Crosshair::~Crosshair() {
   glDeleteVertexArrays(1, &vao);
 }
 
+

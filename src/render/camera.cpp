@@ -42,3 +42,4 @@ void Camera::updateDirection() {
   up = normalize(cross(right, reverseDirection));
 }
 
+

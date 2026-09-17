@@ -1,6 +1,6 @@
 #include "application.hpp"
 
-#include "debug_utils.hpp"
+#include "debug.hpp"
 #include "glad.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -254,4 +254,5 @@ auto Application::getSceneManager() noexcept -> SceneManager & {
 }
 
 auto Application::getSettings() noexcept -> Settings & { return settings_; }
+
 

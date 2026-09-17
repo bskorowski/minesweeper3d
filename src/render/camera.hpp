@@ -1,6 +1,6 @@
 #pragma once
 
-#include "debug_utils.hpp"
+#include "debug.hpp"
 #include "math/math.hpp"
 #include "math/matrix.hpp"
 #include <logzy/logzy.hpp>
@@ -52,4 +52,5 @@ struct Camera {
 private:
   void updateDirection();
 };
+
 

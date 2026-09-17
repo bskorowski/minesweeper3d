@@ -1,5 +1,5 @@
 #include "resource_manager.hpp"
-#include "debug_utils.hpp"
+#include "debug.hpp"
 #include "imgui.h"
 #include "render/texture.hpp"
 #include <filesystem>
@@ -226,4 +226,5 @@ auto ResourceManager::unloadFont(ResourceKey resourceKey) -> bool {
               "ImGui and we cannot unload a single font.");
   return false;
 }
+
 

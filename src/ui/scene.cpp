@@ -1,5 +1,5 @@
 #include "scene.hpp"
-#include "debug_utils.hpp"
+#include "debug.hpp"
 #include "ui/scene.hpp"
 
 void SceneManager::prepareFrame() {
@@ -59,4 +59,5 @@ auto SceneManager::currentScene() const -> const Scene * {
       "No active scene, perhaps no SceneManager::prepareFrame() was called. ");
   return activeScene_;
 }
+
 

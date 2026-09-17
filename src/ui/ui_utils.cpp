@@ -1,6 +1,6 @@
 #include "ui_utils.hpp"
 #include "application.hpp"
-#include "debug_utils.hpp"
+#include "debug.hpp"
 
 v2u getWindowSize() {
   // TODO :: Also this when refactorin window wrapper
@@ -10,4 +10,5 @@ v2u getWindowSize() {
                "Failed to fetch window dimensions");
   return castAs<uint32_t>(dimensions);
 }
+
 

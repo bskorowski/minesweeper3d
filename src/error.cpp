@@ -1,5 +1,5 @@
 #include "error.hpp"
-#include "debug_utils.hpp"
+#include "debug.hpp"
 
 Error::Error(Error::Kind kind, std::string_view msg)
     : kind_{kind}, message_{msg} {
@@ -10,4 +10,5 @@ auto Error::message() const noexcept -> std::string_view {
 
   ASSERT(!message_.empty(), "Error should have a message");
 }
+
 

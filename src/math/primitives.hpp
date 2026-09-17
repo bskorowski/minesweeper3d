@@ -1,5 +1,5 @@
 #pragma once
-#include "debug_utils.hpp"
+#include "debug.hpp"
 #include "matrix.hpp"
 
 /** 3D Ray that starts at the {origin} point and points in a given {direction}
@@ -24,4 +24,5 @@ struct AABB {
     return AABB{.origin = centerPosition - (size * 0.5f), .size = size};
   }
 };
+
 
