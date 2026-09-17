@@ -1,4 +1,5 @@
 #include "crosshair.hpp"
+#include "error.hpp"
 #include "glad.h"
 #include "math/math.hpp"
 #include "render/mesh.hpp"
@@ -37,7 +38,7 @@ Crosshair::Crosshair(v2u screenSize, v2u size, v3f color) {
                        std::pair{fragmentShader, Shader::Type::Fragment}});
 
   if (!programOpt) {
-    throw std::runtime_error("Shader failed to compile");
+    throw ERR(GraphicsError, "Shader program creation failed");
   }
 
   shaderProgram = std::move(*programOpt);

@@ -36,6 +36,9 @@ add_library(
    ./src/resource_manager.cpp
    ./src/resource_manager.hpp
 
+   ./src/error.hpp
+   ./src/error.cpp
+
    ./src/math/math.hpp
    ./src/math/matrix.hpp
 

@@ -1,6 +1,7 @@
 #include "game_scene.hpp"
 #include "GLFW/glfw3.h"
 #include "application.hpp"
+#include "error.hpp"
 #include "imgui.h"
 #include "logzy/logzy.hpp"
 #include "math/matrix.hpp"
@@ -61,7 +62,7 @@ GameScene::GameScene()
     board_ = std::move(boardOpt).value();
   } else {
     logzy::critical("Couldn't create board with size: {}", BOARD_SIZE);
-    throw std::runtime_error(std::format("Couldnt' generate board"));
+    throw ERR(RuntimeError, "Couldn't generate board");
   }
   glfwSetInputMode(Application::getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   loadTextures();
