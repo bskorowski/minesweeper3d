@@ -10,7 +10,7 @@ include(FetchContent)
 FetchContent_Declare(
    logzy
    GIT_REPOSITORY https://github.com/oosiriiss/logzy
-   GIT_TAG f78a0215f1c5733be803eecabe1e96c40f0e8375 # 0.1
+   GIT_TAG 23cd60bcdd4b4e494d4fb46f79ab1860522a1025 # 0.2
 )
 FetchContent_Declare(
   glfw
