@@ -36,6 +36,9 @@ add_library(
    ./src/resource_manager.cpp
    ./src/resource_manager.hpp
 
+   ./src/input.cpp
+   ./src/input.hpp
+
    ./src/error.hpp
    ./src/error.cpp
 
