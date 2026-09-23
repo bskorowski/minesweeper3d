@@ -27,5 +27,6 @@ function(Register_test name)
 endfunction()
 
 Register_test(input_test)
+Register_test(format_test)
 
 message("Tests registered")
