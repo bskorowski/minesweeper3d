@@ -56,6 +56,8 @@ add_library(
    ./src/render/texture.cpp
    ./src/render/texture.hpp
 
+   ./src/render/window/window.hpp
+   ./src/render/window/window.cpp
    ./src/render/window/window_system.hpp
    ./src/render/window/window_system.cpp
 
@@ -66,8 +68,6 @@ add_library(
    ./src/ui/main_menu_scene.hpp
    ./src/ui/game_scene.cpp
    ./src/ui/game_scene.hpp
-   ./src/ui/ui_utils.hpp
-   ./src/ui/ui_utils.cpp
 
    ./vendor/imgui/imconfig.h
    ./vendor/imgui/imgui.h

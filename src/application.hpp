@@ -1,6 +1,7 @@
 #pragma once
 #include "input.hpp"
 #include "profiling.hpp"
+#include "render/window/window.hpp"
 #include "settings.hpp"
 #include "ui/scene.hpp"
 
@@ -11,7 +12,7 @@ struct Application {
   auto shutdown() -> bool;
 
   [[nodiscard]] static auto getDeltaTime() noexcept -> double;
-  [[nodiscard]] static auto getWindow() noexcept -> GLFWwindow *;
+  [[nodiscard]] static auto getWindow() noexcept -> Window &;
   [[nodiscard]] static auto getInput() noexcept -> const Input &;
   [[nodiscard]] static auto getProfilerData() noexcept -> const ProfilerData &;
   [[nodiscard]] static auto getSceneManager() noexcept -> SceneManager &;
@@ -23,12 +24,9 @@ private:
   // They can be safely globally accessed.
 
   inline static double deltaTime_{0.0f};
-  // TODO :: Refactor this out into our Window wrapper class
-  inline static GLFWwindow *mainWindow_{nullptr};
+  inline static std::unique_ptr<Window> mainWindow_{nullptr};
   inline static Input input_{};
   inline static SceneManager sceneManager_{};
   inline static Settings settings_{};
   inline static ProfilerData profilerData_{};
 };
-
-

@@ -1,11 +1,14 @@
 #include "application.hpp"
 
+#include "constants.hpp"
 #include "debug.hpp"
+#include "error.hpp"
 #include "glad.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "profiling.hpp"
+#include "render/window/window.hpp"
 #include "render/window/window_system.hpp"
 #include "resource_manager.hpp"
 #include "settings.hpp"
@@ -13,6 +16,7 @@
 #include "ui/scene.hpp"
 #include <GLFW/glfw3.h>
 #include <logzy/logzy.hpp>
+#include <memory>
 
 /**
  * Creates  GLFW window with OPENGL 4.6 core as render context.
@@ -40,22 +44,12 @@ static auto createGLFWWindow() -> GLFWwindow * {
   return window;
 }
 
-static auto initializeMainGLFWWindow(GLFWwindow *window) -> bool {
-  // Callbacks
-  ASSERT(glfwSetKeyCallback(window, nullptr) == nullptr,
-         "Making sure no duplicate key callback is set");
-
-  return true;
-}
-
-static void intializeOpenGL(GLFWwindow *window) {
-  // TODO :: In theory these could fail too
+static void intializeOpenGL() {
   // OpenGL stuff
-  glfwMakeContextCurrent(window);
-  gladLoadGL(glfwGetProcAddress);
-
-  // VSYNC ON
-  glfwSwapInterval(1);
+  int version = gladLoadGL(glfwGetProcAddress);
+  if (version == 0) {
+    throw ERR(GraphicsError, "gladLoadGL failed");
+  }
 
   // OpenGl global state
   glEnable(GL_DEPTH_TEST);
@@ -65,7 +59,7 @@ static void intializeOpenGL(GLFWwindow *window) {
   glClearColor(0.0, 0.0, 0.0, 0.0);
 }
 
-static void initializeDearImgui(GLFWwindow *window) {
+static void initializeDearImgui(const Window &window) {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
@@ -81,27 +75,18 @@ static void initializeDearImgui(GLFWwindow *window) {
   style.FontScaleDpi = scale;
 
   bool installCallbacks = true;
-  ImGui_ImplGlfw_InitForOpenGL(window, installCallbacks);
-  ImGui_ImplOpenGL3_Init("#version 330 core");
+  ImGui_ImplGlfw_InitForOpenGL(window.getHandle(), installCallbacks);
+  ImGui_ImplOpenGL3_Init(constants::OPENLG_GLSL_VERSION);
 }
 
 auto Application::initialize() -> bool {
   WindowSystem::init();
 
-  mainWindow_ = createGLFWWindow();
+  mainWindow_ = std::make_unique<Window>(WindowParams{});
 
-  if (mainWindow_ == nullptr) {
-    logzy::critical("Couldn't create the main window of the application.");
-    return false;
-  }
-
-  if (!initializeMainGLFWWindow(mainWindow_)) {
-    logzy::critical("Initialization of main window failed.");
-    return false;
-  }
-
-  intializeOpenGL(mainWindow_);
-  initializeDearImgui(mainWindow_);
+  intializeOpenGL();
+  ASSERT(mainWindow_, "Window should be initalized here");
+  initializeDearImgui(getWindow());
 
   sceneManager_.navigateTo(std::make_unique<MainMenuScene>());
   ResourceManager::loadFont(ResourceManager::ResourceKey::FontRegular,
@@ -123,12 +108,12 @@ void Application::run() {
   static GLsync frameSync = nullptr;
 
   Timer deltaTimer{};
-  while (!glfwWindowShouldClose(mainWindow_)) {
+  while (!glfwWindowShouldClose(mainWindow_->getHandle())) {
     sceneManager_.prepareFrame();
     deltaTime_ = deltaTimer.reset();
     Scene *currentScene = sceneManager_.currentScene();
     glfwPollEvents();
-    input_.update(mainWindow_);
+    input_.update(getWindow());
 
     double time = static_cast<float>(glfwGetTime());
     ++profilerData_.frameCounter;
@@ -189,7 +174,7 @@ void Application::run() {
     }
     {
       ScopedTimer systemTimer(profilerData_.waitTime);
-      glfwSwapBuffers(mainWindow_);
+      glfwSwapBuffers(mainWindow_->getHandle());
       frameSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     }
 
@@ -199,20 +184,15 @@ void Application::run() {
 }
 
 auto Application::shutdown() -> bool {
-  if (mainWindow_ == nullptr) {
-    logzy::error("Trying to shutdown application that wasn't initialized with "
-                 "Application::initialize()");
-    return false;
-  }
-  glfwDestroyWindow(mainWindow_);
+  ASSERT(mainWindow_,
+         "Shutting down application without a window. Not initialized?");
 
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
 
   // Shutting odwn glfw
-  glfwDestroyWindow(mainWindow_);
-  mainWindow_ = nullptr;
+  mainWindow_.reset();
   WindowSystem::shutdown();
 
   return true;
@@ -220,7 +200,11 @@ auto Application::shutdown() -> bool {
 
 auto Application::getDeltaTime() noexcept -> double { return deltaTime_; }
 
-auto Application::getWindow() noexcept -> GLFWwindow * { return mainWindow_; }
+auto Application::getWindow() noexcept -> Window & {
+  ASSERT(mainWindow_, "Trying to get main window which is not set. Technically "
+                      "shouldn't happen");
+  return *mainWindow_;
+}
 
 auto Application::getInput() noexcept -> const Input & { return input_; }
 

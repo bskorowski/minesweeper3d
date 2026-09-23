@@ -1,12 +1,10 @@
 #include "game_scene.hpp"
-#include "GLFW/glfw3.h"
 #include "application.hpp"
 #include "error.hpp"
 #include "imgui.h"
 #include "logzy/logzy.hpp"
 #include "math/matrix.hpp"
 #include "resource_manager.hpp"
-#include "ui_utils.hpp"
 
 namespace {
 constexpr v2u crosshairSize = vec2(10u, 10u);
@@ -55,7 +53,8 @@ void unloadTextures() {
 } // namespace
 
 GameScene::GameScene()
-    : crosshair_{getWindowSize(), crosshairSize, crosshairColorNormalizedRGB} {
+    : crosshair_{Application::getWindow().getSize(), crosshairSize,
+                 crosshairColorNormalizedRGB} {
   constexpr size_t BOARD_SIZE{10};
   if (auto boardOpt = Board::create(v3uz{BOARD_SIZE, BOARD_SIZE, BOARD_SIZE})) {
     logzy::info("board created with size: {}", BOARD_SIZE);
@@ -64,7 +63,7 @@ GameScene::GameScene()
     logzy::critical("Couldn't create board with size: {}", BOARD_SIZE);
     throw ERR(RuntimeError, "Couldn't generate board");
   }
-  glfwSetInputMode(Application::getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  Application::getWindow().setCursorCaptured(false);
   loadTextures();
 }
 
@@ -72,17 +71,12 @@ GameScene::~GameScene() { unloadTextures(); }
 
 void GameScene::handleInputs() {
   const Input &input = Application::getInput();
-  GLFWwindow *window = Application::getWindow();
+  Window &window = Application::getWindow();
 
   // Showing cursor when alt is pressed
   if (input.isPressed(Key::Escape)) {
     pauseMenuOpen_ = !pauseMenuOpen_;
-    // TODO :: Refactor this out into our Window wrapper class
-    if (pauseMenuOpen_) {
-      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_CAPTURED);
-    } else {
-      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
+    window.setCursorCaptured(pauseMenuOpen_);
   }
 
   if (input.isPressed(Key::F1)) {
@@ -144,7 +138,7 @@ void GameScene::update() {
 };
 
 void GameScene::draw() {
-  v2u windowSize = getWindowSize();
+  const v2u windowSize = Application::getWindow().getSize();
 
   constexpr float fov = 50.0f;
   constexpr float near = 0.01f;
@@ -159,7 +153,7 @@ void GameScene::draw() {
 static void drawPauseMenu();
 
 void GameScene::updateAndDrawUI() {
-  v2u windowSize = getWindowSize();
+  v2u windowSize = Application::getWindow().getSize();
 
   auto ortho = orthographic(0.0f, windowSize.x(), 0.0F, windowSize.y(), -1.0f);
   crosshair_.draw(ortho);
@@ -175,7 +169,7 @@ void GameScene::updateAndDrawUI() {
 
 static void drawPauseMenu() {
 
-  GLFWwindow *window = Application::getWindow();
+  const Window &window = Application::getWindow();
   Settings &settings = Application::getSettings();
 
   constexpr float minMovementSpeed = 1.0f;
@@ -250,5 +244,3 @@ static void drawPauseMenu() {
     ImGui::End();
   }
 }
-
-
