@@ -6,25 +6,13 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "profiling.hpp"
+#include "render/window/window_system.hpp"
 #include "resource_manager.hpp"
 #include "settings.hpp"
 #include "ui/main_menu_scene.hpp"
 #include "ui/scene.hpp"
 #include <GLFW/glfw3.h>
 #include <logzy/logzy.hpp>
-
-static void GLFWErrorCallback(int code, const char *description) {
-  logzy::error("GLFW Error occurred. Code {}. Description: {}", code,
-               description);
-}
-
-static auto initializeGLFW() -> bool {
-  if (!glfwInit()) {
-    logzy::critical("GLFW could not be initialized. glfwInit() failed.");
-    return false;
-  }
-  return true;
-}
 
 /**
  * Creates  GLFW window with OPENGL 4.6 core as render context.
@@ -54,15 +42,9 @@ static auto createGLFWWindow() -> GLFWwindow * {
 
 static auto initializeMainGLFWWindow(GLFWwindow *window) -> bool {
   // Callbacks
-  ASSERT(glfwSetErrorCallback(nullptr) == nullptr,
-               "Making sure no duplicate error callback is set");
   ASSERT(glfwSetKeyCallback(window, nullptr) == nullptr,
-               "Making sure no duplicate key callback is set");
+         "Making sure no duplicate key callback is set");
 
-  // TODO :: In theory these could fail too
-  glfwSetErrorCallback(GLFWErrorCallback);
-
-  // Disabling cursor when focused
   return true;
 }
 
@@ -104,10 +86,7 @@ static void initializeDearImgui(GLFWwindow *window) {
 }
 
 auto Application::initialize() -> bool {
-  if (!initializeGLFW()) {
-    logzy::critical("GLFW could not be initialized");
-    return false;
-  }
+  WindowSystem::init();
 
   mainWindow_ = createGLFWWindow();
 
@@ -234,7 +213,7 @@ auto Application::shutdown() -> bool {
   // Shutting odwn glfw
   glfwDestroyWindow(mainWindow_);
   mainWindow_ = nullptr;
-  glfwTerminate();
+  WindowSystem::shutdown();
 
   return true;
 }
@@ -254,5 +233,3 @@ auto Application::getSceneManager() noexcept -> SceneManager & {
 }
 
 auto Application::getSettings() noexcept -> Settings & { return settings_; }
-
-

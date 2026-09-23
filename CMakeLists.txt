@@ -53,6 +53,9 @@ add_library(
    ./src/render/texture.cpp
    ./src/render/texture.hpp
 
+   ./src/render/window/window_system.hpp
+   ./src/render/window/window_system.cpp
+
 
    ./src/ui/scene.cpp
    ./src/ui/scene.hpp
