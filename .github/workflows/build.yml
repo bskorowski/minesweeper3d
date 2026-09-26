@@ -57,6 +57,7 @@ jobs:
           cmake 
           -B build 
           -G Ninja
+          -DENABLE_DEBUG_UTILS=OFF
           -DCMAKE_BUILD_TYPE=Release
 
 
