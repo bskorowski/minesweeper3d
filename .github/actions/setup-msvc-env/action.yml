@@ -1,0 +1,26 @@
+name: Setup MSVC environment
+description: Put cl.exe, link.exe and the windows SDK on PATH.
+
+runs:
+  using: composite
+  steps:
+    - shell: pwsh
+      run: |
+        # Find where Vs has all the tools
+        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        if (-not $vswhere) { throw "vswhere not found" } 
+
+        $vsInstallationPath = & $vswhere -property installationPath
+        if (-not $vsInstallationPath) { throw "Visual Studio installation path not found" } 
+
+        # Extract raw env var lines
+        $vcvarsall = "$vsInstallationPath\VC\Auxiliary\Build\vcvarsall.bat"
+        $lines = cmd /c "`"$vcvarsall`" x64 >nul && set"
+        if ($LASTEXITCODE -ne 0) { throw "vcvarsall failed." } 
+
+        # Set all the env vars
+        foreach ($line in $lines) {
+          $name, $value = $line -split '=', 2
+          Set-Item -Path "env:$name" -Value $value
+          Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
+        }
