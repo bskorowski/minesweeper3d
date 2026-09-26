@@ -26,7 +26,7 @@ public:
   void setCursorCaptured(bool captured);
   [[nodiscard]] auto getTitle() const noexcept -> const std::string &;
   [[nodiscard]] auto getSize() const noexcept -> const v2u;
-  [[nodiscard]] auto getHandle() const noexcept -> const Handle;
+  [[nodiscard]] auto getHandle() const noexcept -> Handle;
 
 private:
   std::string title_{};

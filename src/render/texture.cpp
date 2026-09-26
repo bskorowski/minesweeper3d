@@ -5,24 +5,26 @@
 #include <logzy/logzy.hpp>
 #include <utility>
 
-static constexpr GLuint toBinding(GLuint type, std::string_view expr) {
+namespace {
+[[nodiscard]] constexpr GLuint toBinding(GLint type, std::string_view expr) {
   switch (type) {
   case GL_TEXTURE_2D:
     return GL_TEXTURE_BINDING_2D;
   case GL_TEXTURE_2D_ARRAY:
     return GL_TEXTURE_BINDING_2D_ARRAY;
   default:
-    std::unreachable();
+    break;
   }
-
+  ASSERT(false, "{} has no binding mapping defined", expr);
   std::unreachable();
 }
+} // namespace
 
 #define ASSERT_BOUND(type, id)                                                 \
   DEBUG_ONLY({                                                                 \
-    GLint I;                                                                   \
+    GLint I;                                                                  \
     glGetIntegerv(toBinding(type, #type), &I);                                 \
-    ASSERT(I == id)                                                      \
+    ASSERT(std::cmp_equal(I, id))                                              \
   });
 
 Texture::Texture(std::uint8_t *data, int width, int height,
@@ -127,5 +129,3 @@ void TextureArray::generateMipMaps() {
   ASSERT_BOUND(GL_TEXTURE_2D_ARRAY, ID);
   glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 }
-
-

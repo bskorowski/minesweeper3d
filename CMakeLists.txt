@@ -50,7 +50,6 @@ add_library(
    ./src/input.hpp
 
    ./src/error.hpp
-   ./src/error.cpp
 
    ./src/math/math.hpp
    ./src/math/matrix.hpp
@@ -102,6 +101,10 @@ if(ENABLE_DEBUG_UTILS)
    target_compile_definitions(minesweeper3d-lib PUBLIC ENABLE_DEBUG_UTILS)
    target_compile_definitions(minesweeper3d PUBLIC ENABLE_DEBUG_UTILS)
 endif()
+
+target_compile_options(minesweeper3d-lib PUBLIC
+  "$<$<CXX_COMPILER_ID:MSVC>:/W4>"
+  "$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall;-Wextra;-Wpedantic>")
 
 
 # This caused issues when includign glad

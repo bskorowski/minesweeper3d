@@ -2,6 +2,7 @@
 
 #if defined(ENABLE_DEBUG_UTILS)
 
+#include <format>
 #include <cstdlib>
 #include <iostream>
 #include <source_location>
@@ -41,7 +42,8 @@ constexpr bool DEBUG = false; // NOLINT
 #define ASSERT(expr, ...)                                                      \
   (static_cast<bool>(expr)                                                     \
        ? void(0)                                                               \
-       : handleAssertFail(#expr, GET_FIRST(__VA_ARGS__ __VA_OPT__(, ) "")));
+       : handleAssertFail(                                                     \
+             #expr, GET_FIRST(__VA_OPT__(std::format(__VA_ARGS__), ) "")));
 
 #else
 

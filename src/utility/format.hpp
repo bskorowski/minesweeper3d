@@ -29,7 +29,8 @@ template <std::size_t N>
   return s;
 }
 
-template <typename T> [[nodiscard]] constexpr auto to_static_string(T c) {
+template <typename T>
+[[nodiscard]] constexpr auto to_static_string([[maybe_unused]] T c) {
   static_assert(false, "Type doesn't have to_static_string defined.");
   return static_string<1>("x");
 }

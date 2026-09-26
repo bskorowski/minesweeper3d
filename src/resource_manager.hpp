@@ -6,6 +6,7 @@
 #include <span>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 
 struct ResourceManager {
 
@@ -73,11 +74,9 @@ template <> struct std::formatter<ResourceManager::ResourceKey> {
         {Key::TileTextureArray, "TileTextureArray"},
         {Key::FontRegular, "FontRegular"}};
     ASSERT(mappings.contains(key),
-                 "No string representation defined for "
-                 "ResourceManager::ResourceKey with int value = {}",
-                 std::to_underlying(key));
+           "No string representation defined for "
+           "ResourceManager::ResourceKey with int value = {}",
+           std::to_underlying(key));
     return std::format_to(ctx.out(), "{}", mappings.at(key));
   }
 };
-
-

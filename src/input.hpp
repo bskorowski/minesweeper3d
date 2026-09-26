@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <utility>
 
-class Window;
+struct Window;
 
 enum class KeyState : std::uint8_t {
   // Key is up

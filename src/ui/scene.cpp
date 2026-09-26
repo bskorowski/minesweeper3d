@@ -6,13 +6,12 @@ void SceneManager::prepareFrame() {
 
   navigatedBack_ = false;
   ASSERT(!navigatedTo_, "navigatedTo_ has not been consumed, and it is "
-                              "still present in prepareFrame()");
+                        "still present in prepareFrame()");
   // Not needed as it should be moved from in endFrame, but prefer doing it
   // explicitly
   navigatedTo_ = nullptr;
 
-  ASSERT(!scenes_.empty(),
-               "No scene on the stack, and trying to get one.")
+  ASSERT(!scenes_.empty(), "No scene on the stack, and trying to get one.")
   activeScene_ = scenes_.top().get();
 }
 
@@ -37,13 +36,13 @@ void SceneManager::navigateTo(std::unique_ptr<Scene> scene) {
 
 void SceneManager::navigateBack() {
   ASSERT(scenes_.size() > 1,
-               "Cannot navigate back, when no scene will be active");
+         "Cannot navigate back, when no scene will be active");
   navigatedBack_ = true;
 }
 
 void SceneManager::popScene() {
-  ASSERT(!scenes_.empty(),
-               "To pop a scene there must be at least one scene.")
+  ASSERT(!scenes_.empty(), "To pop a scene there must be at least one scene.");
+  scenes_.pop();
 }
 
 auto SceneManager::currentScene() -> Scene * {
@@ -59,5 +58,3 @@ auto SceneManager::currentScene() const -> const Scene * {
       "No active scene, perhaps no SceneManager::prepareFrame() was called. ");
   return activeScene_;
 }
-
-

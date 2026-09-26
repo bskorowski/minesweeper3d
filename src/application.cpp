@@ -18,33 +18,8 @@
 #include <logzy/logzy.hpp>
 #include <memory>
 
-/**
- * Creates  GLFW window with OPENGL 4.6 core as render context.
- */
-static auto createGLFWWindow() -> GLFWwindow * {
-  // Why not use the newest one I guess
-  constexpr int OPENGL_VERSION_MAJOR = 4;
-  constexpr int OPENGL_VERSION_MINOR = 6;
-
-  // Not using deprecated functions, no compatiblilty with older opengl
-  constexpr int OPENGL_PROFILE = GLFW_OPENGL_CORE_PROFILE;
-
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OPENGL_VERSION_MAJOR);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_VERSION_MINOR);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, OPENGL_PROFILE);
-
-  constexpr std::uint32_t INITIAL_WINDOW_WIDTH = 800;
-  constexpr std::uint32_t INITIAL_WINDOW_HEIGHT = 800;
-  constexpr const char *MAIN_WINDOW_TITLE = "Minesweeper 3D";
-
-  GLFWwindow *window =
-      glfwCreateWindow(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT,
-                       MAIN_WINDOW_TITLE, nullptr, nullptr);
-
-  return window;
-}
-
 static void intializeOpenGL() {
+  logzy::debug("Initializing OpenGL");
   // OpenGL stuff
   int version = gladLoadGL(glfwGetProcAddress);
   if (version == 0) {
@@ -115,7 +90,6 @@ void Application::run() {
     glfwPollEvents();
     input_.update(getWindow());
 
-    double time = static_cast<float>(glfwGetTime());
     ++profilerData_.frameCounter;
     {
       ScopedTimer waitTimer(profilerData_.waitTime);

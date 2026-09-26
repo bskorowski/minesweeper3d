@@ -56,7 +56,7 @@ GameScene::GameScene()
     : crosshair_{Application::getWindow().getSize(), crosshairSize,
                  crosshairColorNormalizedRGB} {
   constexpr size_t BOARD_SIZE{10};
-  if (auto boardOpt = Board::create(v3uz{BOARD_SIZE, BOARD_SIZE, BOARD_SIZE})) {
+  if (auto boardOpt = Board::create(vec3(BOARD_SIZE, BOARD_SIZE, BOARD_SIZE))) {
     logzy::info("board created with size: {}", BOARD_SIZE);
     board_ = std::move(boardOpt).value();
   } else {
@@ -168,8 +168,6 @@ void GameScene::updateAndDrawUI() {
 };
 
 static void drawPauseMenu() {
-
-  const Window &window = Application::getWindow();
   Settings &settings = Application::getSettings();
 
   constexpr float minMovementSpeed = 1.0f;

@@ -36,37 +36,49 @@ using v4f = mat<float, 1, 4>;
 // Vector utility specializations
 template <Numeric T> struct mat<T, 1, 2> {
   std::array<std::array<T, 2>, 1> data{};
+
   [[nodiscard]] constexpr T &x() { return data[0][0]; }
+
   [[nodiscard]] constexpr const T &x() const { return data[0][0]; }
 
   [[nodiscard]] constexpr T &y() { return data[0][1]; }
+
   [[nodiscard]] constexpr const T &y() const { return data[0][1]; }
 };
 
 template <Numeric T> struct mat<T, 1, 3> {
   std::array<std::array<T, 3>, 1> data{};
+
   [[nodiscard]] constexpr T &x() { return data[0][0]; }
+
   [[nodiscard]] constexpr const T &x() const { return data[0][0]; }
 
   [[nodiscard]] constexpr T &y() { return data[0][1]; }
+
   [[nodiscard]] constexpr const T &y() const { return data[0][1]; }
 
   [[nodiscard]] constexpr T &z() { return data[0][2]; }
+
   [[nodiscard]] constexpr const T &z() const { return data[0][2]; }
 };
 
 template <Numeric T> struct mat<T, 1, 4> {
   std::array<std::array<T, 4>, 1> data{};
+
   [[nodiscard]] constexpr T &x() { return data[0][0]; }
+
   [[nodiscard]] constexpr const T &x() const { return data[0][0]; }
 
   [[nodiscard]] constexpr T &y() { return data[0][1]; }
+
   [[nodiscard]] constexpr const T &y() const { return data[0][1]; }
 
   [[nodiscard]] constexpr T &z() { return data[0][2]; }
+
   [[nodiscard]] constexpr const T &z() const { return data[0][2]; }
 
   [[nodiscard]] constexpr T &w() { return data[0][3]; }
+
   [[nodiscard]] constexpr const T &w() const { return data[0][3]; }
 };
 
@@ -125,20 +137,20 @@ template <Numeric T, std::size_t Size>
 }
 
 template <Numeric T> [[nodiscard]] constexpr mat<T, 1, 2> vec2(T x, T y) {
-  return mat<T, 1, 2>{.data = {{x, y}}};
+  return mat<T, 1, 2>{.data = {{{x, y}}}};
 }
 
 template <Numeric T> [[nodiscard]] mat<T, 1, 3> constexpr vec3(T x, T y, T z) {
-  return mat<T, 1, 3>{.data = {{x, y, z}}};
+  return mat<T, 1, 3>{.data = {{{x, y, z}}}};
 }
 
 template <Numeric T> [[nodiscard]] mat<T, 1, 3> constexpr vec3(T x) {
-  return mat<T, 1, 3>{.data = {{x, x, x}}};
+  return mat<T, 1, 3>{.data = {{{x, x, x}}}};
 }
 
 template <Numeric T>
 [[nodiscard]] mat<T, 1, 4> constexpr vec4(T x, T y, T z, T w) {
-  return mat<T, 1, 4>{.data = {{x, y, z, w}}};
+  return mat<T, 1, 4>{.data = {{{x, y, z, w}}}};
 }
 
 // Transposition
@@ -271,9 +283,9 @@ template <Numeric T>
                                            const mat<T, 1, 3> &second) {
 
   return mat<T, 1, 3>{
-      .data = {{first.y() * second.z() - first.z() * second.y(),
-                first.z() * second.x() - first.x() * second.z(),
-                first.x() * second.y() - first.y() * second.x()}}};
+      .data = {{{first.y() * second.z() - first.z() * second.y(),
+                 first.z() * second.x() - first.x() * second.z(),
+                 first.x() * second.y() - first.y() * second.x()}}}};
 }
 
 template <Numeric T, std::size_t Cols>
@@ -324,5 +336,3 @@ struct std::formatter<mat<T, Rows, Cols>, char> {
                           out);
   }
 };
-
-

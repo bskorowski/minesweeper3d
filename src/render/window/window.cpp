@@ -48,11 +48,11 @@ auto Window::getTitle() const noexcept -> const std::string & {
 
 auto Window::getSize() const noexcept -> const v2u {
   ASSERT(size_.x() > 0 && size_.y() > 0,
-         std::format("Window size should be non-zero and is: {}", size_));
+         "Window size should be non-zero and is: {}", size_);
   return size_;
 }
 
-auto Window::getHandle() const noexcept -> const Handle {
+auto Window::getHandle() const noexcept -> Handle {
   ASSERT(handle_ != nullptr,
          "Window handle must be non null. Perhaps not initialized?");
   return handle_;

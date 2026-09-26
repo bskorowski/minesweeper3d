@@ -52,8 +52,7 @@ namespace {
   if (index >= map.size())
     return GLFW_KEY_UNKNOWN;
   ASSERT(map[index] != GLFW_KEY_UNKNOWN,
-         std::format("Mapping should exist for key (int): {}",
-                     static_cast<size_t>(k)));
+         "Mapping should exist for key (int): {}", static_cast<size_t>(k));
   return map[index];
 }
 

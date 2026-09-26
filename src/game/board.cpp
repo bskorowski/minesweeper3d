@@ -575,5 +575,3 @@ bool Board::setupVAO(GLuint &vertexArrayID, GLuint &cellInstanceBufferID) {
   glVertexAttribDivisor(vTextureIDLocation, 1);
   return true;
 }
-
-

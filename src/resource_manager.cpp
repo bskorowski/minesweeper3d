@@ -41,13 +41,12 @@ auto ResourceManager::loadTexture(ResourceKey resourceKey,
     logzy::critical("Couldn't find texture: {}", fullPath.string());
   }
 
-  ASSERT(width > 0, std::format("Actual width: {}", width));
-  ASSERT(height > 0, std::format("Actual width: {}", height));
-  ASSERT(
-      channels == desiredChannels,
-      std::format("channels={} desired={}", channels, desiredChannels));
+  ASSERT(width > 0, "Actual width: {}", width);
+  ASSERT(height > 0, "Actual width: {}", height);
+  ASSERT(channels == desiredChannels, "channels={} desired={}", channels,
+         desiredChannels);
 
-  Texture texture(data, width, height);
+  Texture texture(data, width, height, params);
   texture.generateMipMaps();
 
   ResourceManager::textures_.emplace(resourceKey, std::move(texture));
@@ -57,9 +56,8 @@ auto ResourceManager::loadTexture(ResourceKey resourceKey,
 }
 
 auto ResourceManager::unloadTexture(ResourceKey resourceKey) -> bool {
-  ASSERT(
-      textures_.contains(resourceKey),
-      std::format("Texture '{}' must be loaded to unload it", resourceKey));
+  ASSERT(textures_.contains(resourceKey),
+         "Texture '{}' must be loaded to unload it", resourceKey);
 
   if (!textures_.erase(resourceKey)) {
     logzy::warn("Couldn't unload texture {}", resourceKey);
@@ -70,9 +68,8 @@ auto ResourceManager::unloadTexture(ResourceKey resourceKey) -> bool {
 }
 
 auto ResourceManager::getTexture(ResourceKey resourceKey) -> const Texture & {
-  ASSERT(
-      textures_.contains(resourceKey),
-      std::format("Texture '{}' must be loaded to use it", resourceKey));
+  ASSERT(textures_.contains(resourceKey),
+         "Texture '{}' must be loaded to use it", resourceKey);
   return textures_.at(resourceKey);
 }
 
@@ -103,13 +100,10 @@ auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
                          &referenceHeight, &referenceChannels, desiredChannels);
 
   ASSERT(data != nullptr);
-  ASSERT(referenceWidth > 0,
-               std::format("Actual width: {}", referenceWidth));
-  ASSERT(referenceHeight > 0,
-               std::format("Actual width: {}", referenceHeight));
-  ASSERT(referenceChannels == desiredChannels,
-               std::format("channels={} desired={}", referenceChannels,
-                           desiredChannels));
+  ASSERT(referenceWidth > 0, "Actual width: {}", referenceWidth);
+  ASSERT(referenceHeight > 0, "Actual width: {}", referenceHeight);
+  ASSERT(referenceChannels == desiredChannels, "channels={} desired={}",
+         referenceChannels, desiredChannels);
 
   TextureArray array(referenceWidth, referenceHeight, paths.size() + 1, params);
   array.bind();
@@ -136,12 +130,10 @@ auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
                            &channels, desiredChannels);
 
     ASSERT(data != nullptr);
-    ASSERT(referenceWidth == width,
-                 std::format("{} == {}", referenceWidth, width));
-    ASSERT(referenceHeight == height,
-                 std::format("{} == {}", referenceHeight, height));
-    ASSERT(referenceChannels == channels,
-                 std::format("{} == {}", referenceChannels, channels));
+    ASSERT(referenceWidth == width, "{} == {}", referenceWidth, width);
+    ASSERT(referenceHeight == height, "{} == {}", referenceHeight, height);
+    ASSERT(referenceChannels == channels, "{} == {}", referenceChannels,
+           channels);
 
     array.addTexture(data, layer++);
     stbi_image_free(data);
@@ -153,8 +145,7 @@ auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
 
 auto ResourceManager::unloadTextureArray(ResourceKey resourceKey) -> bool {
   ASSERT(textureArrays_.contains(resourceKey),
-               std::format("Texture array '{}' must be loaded to unload it",
-                           resourceKey));
+         "Texture array '{}' must be loaded to unload it", resourceKey);
 
   if (!textureArrays_.erase(resourceKey)) {
     logzy::warn("Couldn't unload texture array {}", resourceKey);
@@ -166,9 +157,8 @@ auto ResourceManager::unloadTextureArray(ResourceKey resourceKey) -> bool {
 
 auto ResourceManager::getTextureArray(ResourceKey resourceKey)
     -> const TextureArray & {
-  ASSERT(
-      textureArrays_.contains(resourceKey),
-      std::format("Texture '{}' must be loaded to use it", resourceKey));
+  ASSERT(textureArrays_.contains(resourceKey),
+         "Texture '{}' must be loaded to use it", resourceKey);
   return textureArrays_.at(resourceKey);
 }
 
@@ -184,9 +174,8 @@ auto ResourceManager::verifyPath(std::filesystem::path path) noexcept -> bool {
 auto ResourceManager::loadFont(ResourceKey resourceKey,
                                std::string_view fontPath,
                                std::filesystem::path basePath) -> bool {
-  ASSERT(
-      resourceKey == ResourceKey::FontRegular,
-      std::format("Are you sure the {} is really a font?", resourceKey));
+  ASSERT(resourceKey == ResourceKey::FontRegular,
+         "Are you sure the {} is really a font?", resourceKey);
 
   std::filesystem::path assetPath = basePath / fontPath;
   logzy::debug("Loading font at: {}", assetPath);
@@ -215,16 +204,15 @@ auto ResourceManager::loadFont(ResourceKey resourceKey,
 
 auto ResourceManager::getFont(ResourceKey resourceKey) -> const Font & {
   ASSERT(resourceKey == ResourceKey::FontRegular,
-               std::format("are you sure '{}' is really a font?", resourceKey));
-  ASSERT(fonts_.contains(resourceKey),
-               std::format("Font '{}' must be loaded to use it", resourceKey));
+         "are you sure '{}' is really a font?", resourceKey);
+  ASSERT(fonts_.contains(resourceKey), "Font '{}' must be loaded to use it",
+         resourceKey);
   return fonts_.at(resourceKey);
 }
 
-auto ResourceManager::unloadFont(ResourceKey resourceKey) -> bool {
+auto ResourceManager::unloadFont([[maybe_unused]] ResourceKey resourceKey)
+    -> bool {
   logzy::warn("Unloading fonts not yet implemented as fonts are used just in "
               "ImGui and we cannot unload a single font.");
   return false;
 }
-
-

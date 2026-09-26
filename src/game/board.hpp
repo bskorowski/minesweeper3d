@@ -42,6 +42,7 @@ public:
 
   void onLeftClick(v3f playerPos, v3f playerDir) noexcept;
   void onRightClick(v3f playerPos, v3f playerDir) noexcept;
+
   constexpr void toggleDrawNeighbours(bool draw) noexcept {
     drawDugAdjacent = draw;
     updateCubeInstanceData();
@@ -79,7 +80,7 @@ public:
 
 private:
   /// Game data
-  std::uint32_t bombsLeft = 0;
+
 
   // Board data
   // Accessed like: Board[z][y][x]
@@ -163,8 +164,7 @@ constexpr float Cell::getTextureIndex() const noexcept {
   if (state == Cell::State::Default) {
     return UNDUG_INDEX;
   }
-  ASSERT(bombsAround >= 0 && bombsAround <= 26,
-               std::to_string(bombsAround));
+  ASSERT(bombsAround >= 0 && bombsAround <= 26, "Got: {}", bombsAround);
   return static_cast<float>(bombsAround);
 }
 
@@ -202,5 +202,3 @@ template <> struct std::formatter<Cell::State, char> {
     return std::format_to(ctx.out(), "{}", mappings[state]);
   }
 };
-
-
