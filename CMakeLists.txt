@@ -26,6 +26,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
    add_link_options("-fuse-ld=lld")
 endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+   # Enable standard-compliant preprocessor, make sure value of __cplusplus macro is correct
+   add_compile_options(/Zc:preprocessor /Zc:__cplusplus)
+endif()
+
 add_library(
    minesweeper3d-lib
 
@@ -97,6 +102,7 @@ if(ENABLE_DEBUG_UTILS)
    target_compile_definitions(minesweeper3d-lib PUBLIC ENABLE_DEBUG_UTILS)
    target_compile_definitions(minesweeper3d PUBLIC ENABLE_DEBUG_UTILS)
 endif()
+
 
 # This caused issues when includign glad
 target_compile_definitions(minesweeper3d-lib PUBLIC GLFW_INCLUDE_NONE)
