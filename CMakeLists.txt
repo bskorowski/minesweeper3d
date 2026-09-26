@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
+# Options
 option(ENABLE_DEBUG_UTILS "Enable debug_utils.hpp" ON)
 
 project(minesweeper3d)
@@ -29,7 +30,6 @@ add_library(
    minesweeper3d-lib
 
    ./src/application.cpp
-   ./src/application.cpp
    ./src/profiling.hpp
    ./src/profiling.cpp
 
@@ -50,7 +50,6 @@ add_library(
    ./src/math/math.hpp
    ./src/math/matrix.hpp
 
-
    ./src/render/camera.hpp
    ./src/render/camera.cpp
    ./src/render/mesh.hpp
@@ -65,7 +64,6 @@ add_library(
    ./src/render/window/window.cpp
    ./src/render/window/window_system.hpp
    ./src/render/window/window_system.cpp
-
 
    ./src/ui/scene.cpp
    ./src/ui/scene.hpp
@@ -116,26 +114,18 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES ON CACHE BOOL "" FORCE)
 
 include_directories(./vendor/glad)
-include_directories(./vendor/glfw)
 include_directories(./vendor/stb)
-include_directories(./vendor/debug_utils)
 include_directories(./vendor/imgui/)
 
 find_package(OpenGL REQUIRED)
 
-
-
 target_link_libraries(minesweeper3d-lib 
-    glfw OpenGL::GL logzy::logzy glfw
+    OpenGL::GL logzy::logzy glfw
     $<$<CXX_COMPILER_ID:Clang>:stdc++exp>
 )
 target_link_libraries(minesweeper3d minesweeper3d-lib)
 
-
-
-
-include(CTest)
-enable_testing()
+# Testing
 add_subdirectory(./tests)
 
 
