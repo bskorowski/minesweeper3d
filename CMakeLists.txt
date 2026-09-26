@@ -135,8 +135,7 @@ target_link_libraries(minesweeper3d-lib
 target_link_libraries(minesweeper3d minesweeper3d-lib)
 
 # Testing
-add_subdirectory(./tests)
-
-
-
-
+include(CTest)
+if(BUILD_TESTING)
+   add_subdirectory(./tests)
+endif()

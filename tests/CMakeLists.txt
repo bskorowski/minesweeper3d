@@ -1,16 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 
-# Options
-option(COMPILE_TESTS "Whether tests will be compiled" OFF)
-
-if(NOT COMPILE_TESTS) 
-   return()
-endif()
-
 project(minesweeper3d-tests)
 
-include(CTest)
-enable_testing()
 
 include(FetchContent)
 FetchContent_Declare(

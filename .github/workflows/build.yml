@@ -55,6 +55,7 @@ jobs:
           -B build 
           -G Ninja
           -DENABLE_DEBUG_UTILS=OFF
+          -DBUILD_TESTING=ON
           -DCMAKE_BUILD_TYPE=Release
 
 
