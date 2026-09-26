@@ -77,6 +77,7 @@ jobs:
         uses: actions/upload-artifact@v7.0.1
         with:
           name: ${{ matrix.os }}-${{ matrix.cc }}
+          path: build/
         
 
 
