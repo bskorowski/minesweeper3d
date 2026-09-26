@@ -4,7 +4,8 @@ option(ENABLE_DEBUG_UTILS "Enable debug_utils.hpp" ON)
 
 project(minesweeper3d)
 
-
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -19,6 +20,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(logzy glfw)
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+   # We need to use clang's linker, as it threw many 'duplicate section' errors on Windows + MSYS2 and 'print' header
+   add_link_options("-fuse-ld=lld")
+endif()
 
 add_library(
    minesweeper3d-lib
@@ -120,8 +125,13 @@ find_package(OpenGL REQUIRED)
 
 
 
-target_link_libraries(minesweeper3d-lib glfw OpenGL::GL logzy::logzy glfw)
+target_link_libraries(minesweeper3d-lib 
+    glfw OpenGL::GL logzy::logzy glfw
+    $<$<CXX_COMPILER_ID:Clang>:stdc++exp>
+)
 target_link_libraries(minesweeper3d minesweeper3d-lib)
+
+
 
 
 include(CTest)

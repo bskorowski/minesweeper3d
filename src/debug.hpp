@@ -4,9 +4,12 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <print> // TODO :: The print header can be heavy on comp time, fix this if it becomes a problem
 #include <source_location>
+
+// As of 26.09.2026 clang doesn't support stacktrace, so we keep it optional
+#if defined(__cpp_lib_stacktrace)
 #include <stacktrace>
+#endif
 
 namespace debugutils {
 constexpr bool DEBUG = false; // NOLINT
@@ -16,22 +19,26 @@ constexpr bool DEBUG = false; // NOLINT
 
 [[noreturn]] inline void handleAssertFail(
     std::string_view expr, std::string_view message,
-    const std::source_location &sourceLoc = std::source_location::current(),
-    const std::stacktrace &stacktrace = std::stacktrace::current()) {
-  std::println(std::cerr, "\nAssertion failed");
-  std::println(std::cerr, "Expression: {}", expr);
+    const std::source_location &sourceLoc = std::source_location::current()) {
+  std::cerr << "\nAssertion failed\n";
+  std::cerr << "Expression: " << expr << '\n';
   if (!message.empty()) {
-    std::println(std::cerr, "Message: {}", message);
+    std::cerr << "Message: " << message << '\n';
   }
-  std::println("File: {}", sourceLoc.file_name());
-  std::println("Line: {}", sourceLoc.line());
-  std::println("Stacktrace:\n{}", std::to_string(stacktrace));
+  std::cerr << "File: " << sourceLoc.file_name() << '\n';
+  std::cerr << "Line: " << sourceLoc.line() << '\n';
+
+// As of 26.09.2026 clang doesn't support stacktrace, so we keep it optional
+#if defined(__cpp_lib_stacktrace)
+  std::cerr << "Stacktrace:\n"
+            << std::to_string(std::stacktrace::current()) << '\n';
+#endif
   std::abort();
 }
 
 #define GET_FIRST(First, ...) First // NOLINT
 
-#define ASSERT(expr, ...)                                                \
+#define ASSERT(expr, ...)                                                      \
   (static_cast<bool>(expr)                                                     \
        ? void(0)                                                               \
        : handleAssertFail(#expr, GET_FIRST(__VA_ARGS__ __VA_OPT__(, ) "")));
@@ -46,5 +53,3 @@ constexpr bool DEBUG = true; // NOLINT
 #define ASSERT(...)
 
 #endif
-
-
