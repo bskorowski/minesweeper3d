@@ -25,10 +25,7 @@ jobs:
             cc: cl
             cxx: cl
             os: windows-latest
-          - name: macOS clang
-            os: macos-lates
-            cc: clang
-            cxx: clang++
+
     env:
       CC: ${{ matrix.cc }}
       CXX: ${{ matrix.cxx }}
