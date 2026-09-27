@@ -23,7 +23,7 @@ jobs:
           clang-format
           --dry-run
           --Werror
-          $(git ls-files -- *.cpp *.hpp *.h)
+          $(git ls-files -- *.cpp *.hpp *.h ':!vendor/*')
 
   build-and-test:
     strategy:
