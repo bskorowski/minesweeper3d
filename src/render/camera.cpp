@@ -28,13 +28,3 @@ void Camera::rotate(v3f rotations) {
 
   updateDirection();
 }
-
-void Camera::updateDirection() {
-  reverseDirection.x() = cos(radians(yaw)) * cos(radians(pitch));
-  reverseDirection.y() = sin(radians(pitch));
-  reverseDirection.z() = sin(radians(yaw)) * cos(radians(pitch));
-
-  reverseDirection = normalize(reverseDirection);
-  right = normalize(cross(reverseDirection, arbitraryUp));
-  up = normalize(cross(right, reverseDirection));
-}

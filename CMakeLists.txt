@@ -10,14 +10,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FetchContent)
 FetchContent_Declare(
-   logzy
-   GIT_REPOSITORY https://github.com/oosiriiss/logzy
-   GIT_TAG 23cd60bcdd4b4e494d4fb46f79ab1860522a1025 # 0.2
+  logzy
+  GIT_REPOSITORY https://github.com/oosiriiss/logzy
+  GIT_TAG 23cd60bcdd4b4e494d4fb46f79ab1860522a1025 # 0.2
+  SYSTEM
 )
 FetchContent_Declare(
   glfw
   GIT_REPOSITORY https://github.com/glfw/glfw
   GIT_TAG        7b6aead9fb88b3623e3b3725ebb42670cbe4c579 # 3.4
+  SYSTEM
 )
 FetchContent_MakeAvailable(logzy glfw)
 

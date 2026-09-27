@@ -98,7 +98,7 @@ constexpr auto factorialsLookupMap = []() {
     term = term * ((-x2) / (i * (i - 1)));
     sum += term;
   }
-  return sum;
+  return static_cast<float>(sum);
 }
 
 } // namespace internal

@@ -50,5 +50,15 @@ struct Camera {
   void rotate(v3f rotations);
 
 private:
-  void updateDirection();
+  constexpr void updateDirection();
 };
+
+constexpr void Camera::updateDirection() {
+  reverseDirection.x() = math::cos(radians(yaw)) * math::cos(radians(pitch));
+  reverseDirection.y() = math::sin(radians(pitch));
+  reverseDirection.z() = math::sin(radians(yaw)) * math::cos(radians(pitch));
+
+  reverseDirection = normalize(reverseDirection);
+  right = normalize(cross(reverseDirection, arbitraryUp));
+  up = normalize(cross(right, reverseDirection));
+}

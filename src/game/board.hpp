@@ -6,10 +6,10 @@
 #include "glad.h"
 #include "math/matrix.hpp"
 #include "render/colors.hpp"
+#include "render/core.hpp"
 #include "render/program.hpp"
 
 struct Cell {
-
   enum class State : std::uint8_t { Default, Dug, Flagged };
 
   std::uint8_t bombsAround{0};
@@ -36,17 +36,13 @@ public:
   void draw(const m4x4f &view, const m4x4f &projection);
   void dig(v3uz coords) noexcept;
   void flag(v3uz coords) noexcept;
-  constexpr void changeCubeSize(float difference) noexcept;
+  void changeCubeSize(float difference) noexcept;
   [[nodiscard]] constexpr v3f
   cellCenterPosition(v3uz cellCoords) const noexcept;
 
   void onLeftClick(v3f playerPos, v3f playerDir) noexcept;
   void onRightClick(v3f playerPos, v3f playerDir) noexcept;
-
-  constexpr void toggleDrawNeighbours(bool draw) noexcept {
-    drawDugAdjacent = draw;
-    updateCubeInstanceData();
-  }
+  void toggleDrawNeighbours(bool draw) noexcept;
 
 private:
   /**
@@ -65,7 +61,8 @@ private:
   void loadCubeMesh(const std::span<const v3f> mesh,
                     const std::span<const v2f> textureCoords);
   bool setupVAO(GLuint &vertexArrayID, GLuint &cellInstanceBufferID);
-  void updateCubeInstanceData(v3uz pointedCellCoordiantes = vec3<size_t>(-1));
+  void updateCubeInstanceData(
+      v3uz pointedCellCoordiantes = vec3(static_cast<size_t>(-1)));
 
   /**
    *  Whether cube at [z][y][x] that have a undug bomb around them should be
@@ -89,21 +86,21 @@ private:
   /// Render data
   Program shaderProgram;
   // Uniform caches
-  GLuint cellSizeLoc_ = -1;
-  GLuint viewLoc_ = -1;
-  GLuint projectionLoc_ = -1;
-  GLuint textureLoc_ = -1;
+  GLint cellSizeLoc_{render::SUNSET};
+  GLint viewLoc_{render::SUNSET};
+  GLint projectionLoc_{render::SUNSET};
+  GLint textureLoc_{render::SUNSET};
 
   // Cube vertex position buffer
-  GLuint cubeMeshID;
+  GLuint cubeMeshID{render::UNSET};
   // Cube vertex texture coord buffer
-  GLuint cubeUvID;
+  GLuint cubeUvID{render::UNSET};
 
-  GLuint opaqueVertexArrayID;
-  GLuint opaqueCellInstanceBufferID;
+  GLuint opaqueVertexArrayID{render::UNSET};
+  GLuint opaqueCellInstanceBufferID{render::UNSET};
 
-  GLuint transparentVertexArrayID;
-  GLuint transparentCellInstanceBufferID;
+  GLuint transparentVertexArrayID{render::UNSET};
+  GLuint transparentCellInstanceBufferID{render::UNSET};
   // Transparent objects require sorting  from furthest to closest in draw
   // method, so we need to keep track of them
   std::vector<Cell::VertexData> transparentInstanceData;
@@ -165,11 +162,6 @@ constexpr float Cell::getTextureIndex() const noexcept {
   }
   ASSERT(bombsAround >= 0 && bombsAround <= 26, "Got: {}", bombsAround);
   return static_cast<float>(bombsAround);
-}
-
-constexpr void Board::changeCubeSize(float difference) noexcept {
-  cellSize += difference;
-  updateCubeInstanceData();
 }
 
 [[nodiscard]] constexpr v3f

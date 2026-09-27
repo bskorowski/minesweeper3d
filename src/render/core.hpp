@@ -3,5 +3,8 @@
 #include "glad.h"
 
 namespace render {
-constexpr GLuint UNSET = -1;
-}
+// null/unset/invalid object
+constexpr GLuint UNSET = 0;
+// signed null/unset/invalid object
+constexpr GLint SUNSET = -1;
+} // namespace render

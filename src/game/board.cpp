@@ -11,6 +11,7 @@
 #include "math/intersections.hpp"
 #include "math/matrix.hpp"
 #include "math/random.hpp"
+#include "render/core.hpp"
 #include "render/mesh.hpp"
 #include "resource_manager.hpp"
 
@@ -88,6 +89,11 @@ void Board::onRightClick(v3f playerPos, v3f playerDir) noexcept {
   }
 
   flag(*targetedCoordinates);
+}
+
+void Board::toggleDrawNeighbours(bool draw) noexcept {
+  drawDugAdjacent = draw;
+  updateCubeInstanceData();
 }
 
 [[nodiscard]] std::optional<v3uz>
@@ -256,6 +262,11 @@ void Board::flag(v3uz coords) noexcept {
   updateCubeInstanceData();
 }
 
+void Board::changeCubeSize(float difference) noexcept {
+  cellSize += difference;
+  updateCubeInstanceData();
+}
+
 constexpr static std::string_view vertexShaderText = R"(
 #version 330 core
 in vec4 vCol;
@@ -335,7 +346,7 @@ void main() {
 }
 
 void Board::loadUniformLocations() {
-  std::unordered_map<std::string, GLuint *> fieldMaps{
+  std::unordered_map<std::string, GLint *> fieldMaps{
       {"uCellSize", &cellSizeLoc_},
       {"view", &viewLoc_},
       {"projection", &projectionLoc_},
@@ -482,12 +493,11 @@ bool Board::setupVAO(GLuint &vertexArrayID, GLuint &cellInstanceBufferID) {
   const char *colorAttributeName = "vCol";
   const char *textureIDAttributeName = "vTexID";
 
-  GLint vposLocation = -1;
-  GLint texCoordLocation = -1;
-
-  GLint voffsetLocation = -1;
-  GLint vcolLocation = -1;
-  GLuint vTextureIDLocation = -1;
+  GLint vposLocation{render::SUNSET};
+  GLint texCoordLocation{render::SUNSET};
+  GLint voffsetLocation{render::SUNSET};
+  GLint vcolLocation{render::SUNSET};
+  GLint vTextureIDLocation{render::SUNSET};
 
   if (auto vposLocationOpt =
           shaderProgram.getAttribLocation(positionAttributeName)) {

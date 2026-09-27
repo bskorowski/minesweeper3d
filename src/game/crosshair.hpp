@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math/matrix.hpp"
+#include "render/core.hpp"
 #include "render/program.hpp"
 
 // TODO :: Rest of theHUD
@@ -15,7 +16,7 @@ struct Crosshair {
 private:
   Program shaderProgram{}; // Later this would could be whole HUD shader
 
-  GLuint projectionLoc_ = -1;
-  GLuint vao = -1;
-  GLuint vbo = -1;
+  GLint projectionLoc_{render::SUNSET};
+  GLuint vao{render::UNSET};
+  GLuint vbo{render::UNSET};
 };

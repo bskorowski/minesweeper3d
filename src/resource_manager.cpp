@@ -114,7 +114,7 @@ auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
   stbi_image_free(data);
 
   for (std::string_view pathPart : paths) {
-    std::filesystem::path currentPath = basePath / pathPart;
+    currentPath = basePath / pathPart;
     logzy::info("Loading texture at: '{}'", currentPath);
     if (!verifyPath(currentPath)) {
       logzy::critical("Texture not found: {}, couldn't load layer: {}",
@@ -126,8 +126,8 @@ auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
     int height = -1;
     int channels = -1;
 
-    auto *data = stbi_load(currentPath.string().c_str(), &width, &height,
-                           &channels, desiredChannels);
+    data = stbi_load(currentPath.string().c_str(), &width, &height, &channels,
+                     desiredChannels);
 
     ASSERT(data != nullptr);
     ASSERT(referenceWidth == width, "{} == {}", referenceWidth, width);
