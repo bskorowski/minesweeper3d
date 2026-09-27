@@ -1,6 +1,7 @@
 #include "profiling.hpp"
 #include "GLFW/glfw3.h"
 #include "imgui.h"
+#include <cinttypes>
 #include <stdint.h>
 
 void ProfilerData::draw() const {
@@ -23,7 +24,9 @@ void ProfilerData::draw() const {
   ImGui::Text("UI Update time [ms]: %.3f", uiUpdateMs);
   ImGui::Text("UI Render time [ms]: %.3f", uiRenderMs);
   ImGui::Text("Wait  time [ms]: %.3f", waitTime);
-  ImGui::Text("Frame number: %llu", frameCounter);
+  // PRIu64 picks the correct format specifier for the underlying type of
+  // std::uint64_t (ulong on linux vs ulonglong on win)
+  ImGui::Text("Frame number: %" PRIu64, frameCounter);
   ImGui::End();
 }
 
