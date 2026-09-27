@@ -1,0 +1,18 @@
+name: Run unit test suite
+description: Runs CTest inside build directory. The project must be built before.
+
+inputs:
+  build-dir:
+    description: Build directory
+    default: build
+
+runs:
+  using: composite
+  steps:
+    - name: Test (${{ inputs.build-dir }})
+      shell: bash
+      run: >
+        ctest
+        --test-dir build
+        --output-on-failure
+        --build-config Release

@@ -1,0 +1,71 @@
+run-name: CI pipeline
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-format:
+    runs-on: ubuntu-26.04
+    name: Code formatting
+    steps: 
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Check file on runner disk
+        run: |
+          pwd
+          ls -laR .github/actions/
+
+      - name: Check format
+        uses: ./.github/actions/check-cpp-format
+
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Linux (GCC)"
+            os: ubuntu-26.04
+            cc: gcc
+            cxx: g++
+            cxx_flags: -Werror
+          - name: "Linux (Clang)"
+            os: ubuntu-26.04
+            cc: clang
+            cxx: clang++
+            cxx_flags: -Werror
+          - name: "Windows (MSVC)"
+            cc: cl
+            cxx: cl
+            os: windows-latest
+            cxx_flags: -WX
+
+    name: Build & Test 
+    needs: check-format
+    runs-on: ${{ matrix.os }}  
+
+    steps: 
+      - name: "Checkout repository"
+        uses: actions/checkout@v7.0.1
+
+      - name: Build project
+        uses: ./.github/actions/build-project
+        with: 
+          cc: ${{ matrix.cc }}
+          cxx: ${{ matrix.cxx }}
+          cxx_flags: ${{ matrix.cxx_flags }}
+          
+      - name: Test 
+        uses: ./.github/actions/build-project
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: ${{ matrix.os }}-${{ matrix.cc }}
+          path: build/
+        
+
+

@@ -1,0 +1,17 @@
+name: Check code formatting with clang
+description: Checks if files are correctly formatted with clang-format. Excludes vendor directory.
+
+runs:
+  using: composite
+  steps:
+    - name: Install clang-format
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y clang-format
+
+    - name: Check code formatting (clang-format)
+      shell: bash
+      run: >
+        clang-format
+        --dry-run
+        --Werror
+        $(git ls-files -- *.cpp *.hpp *.h ':!vendor/*')

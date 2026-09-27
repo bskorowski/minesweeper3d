@@ -1,0 +1,54 @@
+name: Check code formatting with clang
+description: Checks if files are correctly formatted with clang-format. Excludes vendor directory.
+
+inputs:
+  cc:
+    description: C compiler executable
+    required: false
+    default: gcc
+  cxx:
+    description: C++ compiler executable
+    required: false
+    default: g++
+  cxx_flags:
+    description: C++ compiler flags
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Configure Linux environment
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update && \
+        sudo apt-get install -y \
+          libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev \
+          libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules \
+          libgl1-mesa-dev pkg-config xvfb
+
+    - name: Setup MSVC environment
+      if: runner.os == 'Windows'
+      uses: ./.github/actions/setup-msvc-env
+
+    - name: Configure CMake
+      shell: bash
+      env:
+        CC: ${{ inputs.cc }}
+        CXX: ${{ inputs.cxx }}
+      run: >
+        cmake
+        -B build
+        -G Ninja
+        -DENABLE_DEBUG_UTILS=OFF
+        -DBUILD_TESTING=ON
+        -DCMAKE_CXX_FLAGS="${{ inputs.cxx_flags }}"
+        -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build
+      shell: bash
+      run: >
+        cmake
+        --build build
+        --config Release
+        --parallel
