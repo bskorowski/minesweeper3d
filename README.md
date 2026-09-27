@@ -47,6 +47,10 @@ cp -r assets ./build/assets
     * [tasty](https://github.com/oosiriiss/tasty) - Testing library
     * [logzy](https://github.com/oosiriiss/logzy) - Logging utilities
 
+## Development
+Development utilities are present in the [dev](./dev/) directory. 
+
+They may include useful things like git-hooks.
 
 ## Other screenshots
 

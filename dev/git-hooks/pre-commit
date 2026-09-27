@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# This file is meant to be used as a git pre-commit hool.
+# Copy it to .git/hook/pre-commit
+
+echo "Running pre-commit checks"
+
+if ! command -v clang-format >/dev/null 2>&1; then
+   echo "clang-format executable is not available on PATH."
+   echo "Aborting."
+   exit 1
+fi
+
+# Check formatting of Added, Copied, Modified, Renamed. C++ files only
+# Generally only .hpp convetion is used, but we check .h also
+FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E ".*\.(cpp|hpp|h)$")
+
+
+if [ -n "$FILES" ]; then
+   echo "Checking formatting of ${#FILES[@]} files"
+
+   for file in $FILES; do
+      # Check commited changes, not the (possibly uncommited) file on the disk
+      git show ":$file" | clang-format --dry-run --Werror --assume-filename="$file"
+      if [ $? -ne 0 ]; then
+	 exit 2
+      fi
+   done
+fi
+
+echo "Finished pre-commit"
+exit 0
