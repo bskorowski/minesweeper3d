@@ -1,0 +1,9 @@
+# Force all text files to checkout and commit with LF line endings
+* text=auto eol=lf
+
+# Keep binary files untouched
+*.png binary
+*.jpg binary
+*.ico binary
+*.exe binary
+*.dll binary
