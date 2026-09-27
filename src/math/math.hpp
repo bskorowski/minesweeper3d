@@ -1,5 +1,6 @@
 #pragma once
 
+#include "trig.hpp"
 #include <array>
 #include <logzy/logzy.hpp>
 #include <math.h>
@@ -8,7 +9,7 @@
 #include "matrix.hpp"
 
 [[nodiscard]] constexpr float radians(float degrees) {
-  return degrees * std::numbers::pi / 180.0F;
+  return static_cast<float>(degrees * std::numbers::pi / 180.0F);
 }
 
 [[nodiscard]] constexpr m4x4f orthographic(float left, float right,
@@ -76,12 +77,13 @@
 
   m4x4f rotationMatrix = m4x4f{
 
-      .data = {// clang-format off
+      .data = {
+          // clang-format off
 	       std::array<float, 4>{ 1.0F ,     0.0F      ,     0.0F     , 0.0F },
-               std::array<float, 4>{ 0.0F ,  cos(radians) , sin(radians) , 0.0F },
-               std::array<float, 4>{ 0.0F , -sin(radians) , cos(radians) , 0.0F },
+               std::array<float, 4>{ 0.0F ,  math::cos(radians) , math::sin(radians) , 0.0F },
+               std::array<float, 4>{ 0.0F , -math::sin(radians) , math::cos(radians) , 0.0F },
                std::array<float, 4>{ 0.0F ,     0.0F      ,     0.0F     , 1.0F }}};
-               // clang-format on
+  // clang-format on
 
   return rotationMatrix * mat;
 }
@@ -91,10 +93,11 @@
  */
 [[nodiscard]] constexpr m4x4f rotateY(const m4x4f &mat, float radians) {
   m4x4f rotationMatrix{
-      .data = {// clang-format off
-	       std::array<float, 4>{ cos(radians) , 0.0F, -sin(radians) , 0.0F },
+      .data = {
+          // clang-format off
+	       std::array<float, 4>{ math::cos(radians) , 0.0F, -math::sin(radians) , 0.0F },
                std::array<float, 4>{     0.0F     , 1.0F,     0.0F      , 0.0F },
-               std::array<float, 4>{ sin(radians) , 0.0F, cos(radians)  , 0.0F },
+               std::array<float, 4>{ math::sin(radians) , 0.0F, math::cos(radians)  , 0.0F },
                std::array<float, 4>{     0.0F     , 0.0F,     0.0F      , 1.0F }}};
    //clang-format on 
 
@@ -107,8 +110,8 @@
 [[nodiscard]] constexpr m4x4f rotateZ(const m4x4f &mat, float radians) {
   m4x4f rotationMatrix{
       .data = { //clang-format off
-	       std::array<float, 4>{  cos(radians) , sin(radians) , 0.0F , 0.0F },
-               std::array<float, 4>{ -sin(radians) , cos(radians) , 0.0F , 0.0F },
+	       std::array<float, 4>{  math::cos(radians) , math::sin(radians) , 0.0F , 0.0F },
+               std::array<float, 4>{ -math::sin(radians) , math::cos(radians) , 0.0F , 0.0F },
                std::array<float, 4>{     0.0F      ,     0.0F     , 1.0F , 0.0F },
                std::array<float, 4>{     0.0F      ,     0.0F     , 0.0F , 1.0F }}};
    //clang-format on
@@ -122,8 +125,8 @@
 [[nodiscard]] constexpr m4x4f rotate(const m4x4f &mat, float radians,
                                      v3f axis) {
 
-  const float c = cos(radians);
-  const float s = sin(radians);
+  const float c = math::cos(radians);
+  const float s = math::sin(radians);
   const float ic = 1.0F - c;
 
   const v3f normalized = normalize(axis);
@@ -139,7 +142,7 @@
 	       std::array<float, 4>{ x * z * ic + y * s , y * z * ic - x * s ,   c + z * z * ic   , 0.0F },
                std::array<float, 4>{        0.0F      ,        0.0F        ,         0.0F       , 1.0F }}
    };
-               // clang-format on
+  // clang-format on
 
   return rotationMatrix * mat;
 }
