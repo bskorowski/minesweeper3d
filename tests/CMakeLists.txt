@@ -3,16 +3,6 @@ cmake_minimum_required(VERSION 3.19)
 project(minesweeper3d-tests)
 
 
-include(FetchContent)
-FetchContent_Declare(
-   tasty
-   GIT_REPOSITORY https://github.com/oosiriiss/tasty
-   GIT_TAG 0.2.11
-)
-FetchContent_MakeAvailable(tasty)
-
-
-
 function(Register_test name)
       add_executable(${name} ${name}.cpp)
       target_link_libraries(${name} PRIVATE minesweeper3d-lib tasty::tasty)

@@ -1,3 +1,9 @@
-[submodule "glfw"]
-	path = ./vendor/glfw
-	url = https://github.com/glfw/glfw/
+[submodule "vendor/logzy"]
+	path = vendor/logzy
+	url = https://github.com/bskorowski/logzy
+[submodule "vendor/glfw"]
+	path = vendor/glfw
+	url = https://github.com/glfw/glfw
+[submodule "vendor/tasty"]
+	path = vendor/tasty
+	url = https://github.com/bskorowski/tasty

@@ -8,21 +8,6 @@ project(minesweeper3d)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(FetchContent)
-FetchContent_Declare(
-  logzy
-  GIT_REPOSITORY https://github.com/oosiriiss/logzy
-  GIT_TAG 23cd60bcdd4b4e494d4fb46f79ab1860522a1025 # 0.2
-  SYSTEM
-)
-FetchContent_Declare(
-  glfw
-  GIT_REPOSITORY https://github.com/glfw/glfw
-  GIT_TAG        7b6aead9fb88b3623e3b3725ebb42670cbe4c579 # 3.4
-  SYSTEM
-)
-FetchContent_MakeAvailable(logzy glfw)
-
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
    # We need to use clang's linker, as it threw many 'duplicate section' errors on Windows + MSYS2 and 'print' header
    add_link_options("-fuse-ld=lld")
@@ -78,6 +63,7 @@ add_library(
    ./src/ui/game_scene.cpp
    ./src/ui/game_scene.hpp
 
+   # TODO :: CMakeLists for imgui
    ./vendor/imgui/imconfig.h
    ./vendor/imgui/imgui.h
    ./vendor/imgui/imgui.cpp
@@ -124,9 +110,12 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 # TODO Turn off building examples once base is set up
 set(GLFW_BUILD_EXAMPLES ON CACHE BOOL "" FORCE)
 
-include_directories(./vendor/glad)
-include_directories(./vendor/stb)
-include_directories(./vendor/imgui/)
+add_subdirectory(vendor/tasty SYSTEM)
+add_subdirectory(vendor/logzy SYSTEM)
+add_subdirectory(vendor/glfw SYSTEM)
+include_directories(vendor/glad)
+include_directories(vendor/stb)
+include_directories(vendor/imgui/)
 
 find_package(OpenGL REQUIRED)
 
