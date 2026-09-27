@@ -81,7 +81,6 @@ public:
 private:
   /// Game data
 
-
   // Board data
   // Accessed like: Board[z][y][x]
   // TODO :: Abstract this

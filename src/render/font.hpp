@@ -3,5 +3,3 @@
 struct Font {
   void *fontData{nullptr};
 };
-
-

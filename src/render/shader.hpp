@@ -62,5 +62,3 @@ template <> struct std::formatter<Shader::Type, char> {
     return std::ranges::copy(out, ctx.out()).out;
   }
 };
-
-

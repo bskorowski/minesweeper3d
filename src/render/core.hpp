@@ -5,5 +5,3 @@
 namespace render {
 constexpr GLuint UNSET = -1;
 }
-
-

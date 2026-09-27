@@ -44,8 +44,7 @@ bool constexprFormat_Test() {
   tasty::TestRunner runner("constexprFormat");
 
   runner.registerTest([]() {
-    constexpr auto x =
-        constexprFormat<"{}Hello {}{}{} g">("x", "y", "z", "w");
+    constexpr auto x = constexprFormat<"{}Hello {}{}{} g">("x", "y", "z", "w");
     tasty::expectEqual(x.view(), "xHello yzw g");
   });
 

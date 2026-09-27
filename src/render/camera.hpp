@@ -52,5 +52,3 @@ struct Camera {
 private:
   void updateDirection();
 };
-
-

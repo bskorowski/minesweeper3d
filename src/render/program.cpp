@@ -131,6 +131,7 @@ bool Program::setV3f(const std::string &name, v3f value) const {
   glUniform3fv(*locOpt, 1, dataPtrAs<GLfloat>(value));
   return true;
 }
+
 void Program::setV3f(GLint location, v3f value) const {
   glUniform3fv(location, 1, dataPtrAs<GLfloat>(value));
 }
@@ -145,6 +146,7 @@ bool Program::setV4f(const std::string &name, v4f value) const {
   glUniform3fv(*locOpt, 1, dataPtrAs<GLfloat>(value));
   return true;
 }
+
 void Program::setV4f(GLint location, v4f value) const {
   glUniform4fv(location, 1, dataPtrAs<GLfloat>(value));
 }
@@ -161,6 +163,7 @@ bool Program::setFloat(const std::string &name, float value) const {
 
   return true;
 }
+
 void Program::setFloat(GLint location, float value) const {
   glUniform1f(location, static_cast<GLfloat>(value));
 }
@@ -181,5 +184,3 @@ bool Program::setInt(const std::string &name, int value) const {
 void Program::setInt(GLint location, int value) const {
   glUniform1i(location, value);
 }
-
-

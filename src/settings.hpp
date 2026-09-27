@@ -6,5 +6,3 @@ struct Settings {
   // float horizontalSensitivity{5.0f};
   // float verticalSensitivity{5.0f};
 };
-
-

@@ -16,9 +16,8 @@
 
 void Board::draw(const m4x4f &view, const m4x4f &projection) {
 
-  ASSERT(cells_.size() > 0 && cells_[0].size() > 0 &&
-                   cells_[0][0].size() > 0,
-               "Board is generated and has least one cell.");
+  ASSERT(cells_.size() > 0 && cells_[0].size() > 0 && cells_[0][0].size() > 0,
+         "Board is generated and has least one cell.");
 
   shaderProgram.use();
 
@@ -201,8 +200,8 @@ static constexpr void digDFS(std::vector<std::vector<std::vector<Cell>>> &cells,
                              size_t x, size_t y, size_t z) noexcept {
   auto &cell = cells[z][y][x];
   ASSERT(cell.state == Cell::State::Default,
-               "Passed coordiantes shouldn't be dug or flagged "
-               "(==Cell::State::Default)");
+         "Passed coordiantes shouldn't be dug or flagged "
+         "(==Cell::State::Default)");
 
   cells[z][y][x].state = Cell::State::Dug;
 
@@ -239,9 +238,8 @@ void Board::dig(v3uz coords) noexcept {
 
 void Board::flag(v3uz coords) noexcept {
 
-  ASSERT(cells_[coords.z()][coords.y()][coords.x()].state !=
-                   Cell::State::Dug,
-               "Cell that is dug cannot be flagged");
+  ASSERT(cells_[coords.z()][coords.y()][coords.x()].state != Cell::State::Dug,
+         "Cell that is dug cannot be flagged");
 
   auto &cell = cells_[coords.z()][coords.y()][coords.x()];
 

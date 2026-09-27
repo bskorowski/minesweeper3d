@@ -22,7 +22,7 @@ namespace {
 
 #define ASSERT_BOUND(type, id)                                                 \
   DEBUG_ONLY({                                                                 \
-    GLint I;                                                                  \
+    GLint I;                                                                   \
     glGetIntegerv(toBinding(type, #type), &I);                                 \
     ASSERT(std::cmp_equal(I, id))                                              \
   });

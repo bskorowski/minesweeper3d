@@ -37,5 +37,3 @@ private:
   // Whether should navigate to another scene (add to stack) on end of frame
   std::unique_ptr<Scene> navigatedTo_{nullptr};
 };
-
-

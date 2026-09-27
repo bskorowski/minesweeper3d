@@ -89,5 +89,3 @@ GLuint Shader::toOpenGL(Shader::Type type) {
   logzy::error("Unreachable reached");
   std::unreachable();
 }
-
-
