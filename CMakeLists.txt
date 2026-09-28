@@ -14,8 +14,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-   # Enable standard-compliant preprocessor, make sure value of __cplusplus macro is correct
-   add_compile_options(/Zc:preprocessor /Zc:__cplusplus)
+   # Enable standard-compliant preprocessor, 
+   add_compile_options(/Zc:preprocessor)
+   # make sure value of __cplusplus macro is correct
+   add_compile_options(/Zc:__cplusplus)
+   # Enable standard c++ stack unwinding, extern "c" never throw c++ exceptions
+   add_compile_options(/EHsc)
 endif()
 
 add_library(
