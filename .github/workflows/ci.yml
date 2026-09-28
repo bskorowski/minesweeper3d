@@ -13,6 +13,8 @@ jobs:
     steps: 
       - name: Checkout repository
         uses: actions/checkout@v7.0.1
+        with: 
+          submodules: false # Explicit false, submodules not needed to check format.
 
       - name: Check file on runner disk
         run: |
@@ -50,6 +52,8 @@ jobs:
     steps: 
       - name: "Checkout repository"
         uses: actions/checkout@v7.0.1
+        with:
+          submodules: recursive
 
       - name: Build project
         uses: ./.github/actions/build-project
