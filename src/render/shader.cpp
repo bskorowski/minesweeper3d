@@ -1,4 +1,6 @@
 #include "shader.hpp"
+#include "debug.hpp"
+#include <limits>
 #include <logzy/logzy.hpp>
 #include <optional>
 
@@ -53,7 +55,8 @@ Shader::fromString(std::string_view shaderSource, Shader::Type type) {
 std::optional<std::string> Shader::compile(std::string_view source) const {
   // Loading the shader data
   const char *sourceData = source.data();
-  const GLint lengthArray = source.size();
+  ASSERT(source.size() < std::numeric_limits<GLint>::max());
+  const GLint lengthArray = static_cast<GLint>(source.size());
   glShaderSource(ID, 1, &sourceData, &lengthArray);
 
   // Compiling shader
@@ -66,7 +69,9 @@ std::optional<std::string> Shader::compile(std::string_view source) const {
 
   glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
   if (success == GL_FALSE) {
-    glGetShaderInfoLog(ID, infoLog.size(), &outputLength, infoLog.data());
+    ASSERT(infoLog.size() < std::numeric_limits<GLsizei>::max());
+    glGetShaderInfoLog(ID, static_cast<GLsizei>(infoLog.size()), &outputLength,
+                       infoLog.data());
     logzy::critical("Fragment shader didn't compile. {}", infoLog);
     std::optional<std::string> out(
         std::string(infoLog.begin(), std::next(infoLog.begin(), outputLength)));

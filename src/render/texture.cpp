@@ -5,8 +5,9 @@
 #include <logzy/logzy.hpp>
 #include <utility>
 
+#if defined(ENABLE_DEBUG_UTILS)
 namespace {
-[[nodiscard]] constexpr GLuint toBinding(GLint type, std::string_view expr) {
+[[nodiscard]] constexpr GLuint toBinding(GLint type) {
   switch (type) {
   case GL_TEXTURE_2D:
     return GL_TEXTURE_BINDING_2D;
@@ -15,16 +16,17 @@ namespace {
   default:
     break;
   }
-  ASSERT(false, "{} has no binding mapping defined", expr);
-  std::unreachable();
+  return render::UNSET;
 }
 } // namespace
+#endif
 
 #define ASSERT_BOUND(type, id)                                                 \
   DEBUG_ONLY({                                                                 \
     GLint I;                                                                   \
-    glGetIntegerv(toBinding(type, #type), &I);                                 \
-    ASSERT(std::cmp_equal(I, id))                                              \
+    glGetIntegerv(toBinding(type), &I);                                        \
+    ASSERT(I != render::UNSET, "No binding for type '{}'", #type);             \
+    ASSERT(std::cmp_equal(I, id));                                             \
   });
 
 Texture::Texture(std::uint8_t *data, int width, int height,

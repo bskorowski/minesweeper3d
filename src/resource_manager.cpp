@@ -105,7 +105,10 @@ auto ResourceManager::loadTextureArray(ResourceKey resourceKey,
   ASSERT(referenceChannels == desiredChannels, "channels={} desired={}",
          referenceChannels, desiredChannels);
 
-  TextureArray array(referenceWidth, referenceHeight, paths.size() + 1, params);
+  ASSERT(paths.size() < std::numeric_limits<int>::max(),
+         "Ensure safe cast to int");
+  TextureArray array(referenceWidth, referenceHeight,
+                     static_cast<int>(paths.size() + 1), params);
   array.bind();
 
   stbi_set_flip_vertically_on_load(true);

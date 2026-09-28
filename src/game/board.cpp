@@ -35,8 +35,13 @@ void Board::draw(const m4x4f &view, const m4x4f &projection) {
 
   if (opaqueInstancesToDraw > 0) {
     glBindVertexArray(opaqueVertexArrayID);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, CUBE_VERTICES.size(),
-                          opaqueInstancesToDraw);
+    ASSERT(CUBE_VERTICES.size() < std::numeric_limits<GLsizei>::max(),
+           "Ensure safe cast");
+    ASSERT(opaqueInstancesToDraw < std::numeric_limits<GLsizei>::max(),
+           "Ensure safe cast");
+    glDrawArraysInstanced(GL_TRIANGLES, 0,
+                          static_cast<GLsizei>(CUBE_VERTICES.size()),
+                          static_cast<GLsizei>(opaqueInstancesToDraw));
   }
 
   if (transparentInstanceData.size() > 0) {
@@ -66,8 +71,15 @@ void Board::draw(const m4x4f &view, const m4x4f &projection) {
     // Drawing transparent cubes
     glDepthMask(GL_FALSE);
     glBindVertexArray(transparentVertexArrayID);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, CUBE_VERTICES.size(),
-                          transparentInstanceData.size());
+
+    ASSERT(CUBE_VERTICES.size() < std::numeric_limits<GLsizei>::max(),
+           "Ensure safe cast");
+    ASSERT(transparentInstanceData.size() < std::numeric_limits<GLsizei>::max(),
+           "Ensure safe cast");
+
+    glDrawArraysInstanced(GL_TRIANGLES, 0,
+                          static_cast<GLsizei>(CUBE_VERTICES.size()),
+                          static_cast<GLsizei>(transparentInstanceData.size()));
     glDepthMask(GL_TRUE);
   }
 }
