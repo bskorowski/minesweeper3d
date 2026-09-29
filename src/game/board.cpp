@@ -14,6 +14,7 @@
 #include "render/core.hpp"
 #include "render/mesh.hpp"
 #include "resource_manager.hpp"
+#include "utility/cast.hpp"
 
 void Board::draw(const m4x4f &view, const m4x4f &projection) {
 
@@ -39,9 +40,8 @@ void Board::draw(const m4x4f &view, const m4x4f &projection) {
            "Ensure safe cast");
     ASSERT(opaqueInstancesToDraw < std::numeric_limits<GLsizei>::max(),
            "Ensure safe cast");
-    glDrawArraysInstanced(GL_TRIANGLES, 0,
-                          static_cast<GLsizei>(CUBE_VERTICES.size()),
-                          static_cast<GLsizei>(opaqueInstancesToDraw));
+    glDrawArraysInstanced(GL_TRIANGLES, 0, cast<GLsizei>(CUBE_VERTICES.size()),
+                          cast<GLsizei>(opaqueInstancesToDraw));
   }
 
   if (transparentInstanceData.size() > 0) {
@@ -61,8 +61,8 @@ void Board::draw(const m4x4f &view, const m4x4f &projection) {
     });
     // Sending sorted data t o gpu
     glBindBuffer(GL_ARRAY_BUFFER, transparentCellInstanceBufferID);
-    const GLsizeiptr transparentSizeBytes =
-        transparentInstanceData.size() * sizeof(transparentInstanceData[0]);
+    const GLsizeiptr transparentSizeBytes = cast<GLsizeiptr>(
+        transparentInstanceData.size() * sizeof(transparentInstanceData[0]));
     glBufferSubData(GL_ARRAY_BUFFER, 0, transparentSizeBytes,
                     transparentInstanceData.data());
     // Resetting buffer
@@ -77,9 +77,8 @@ void Board::draw(const m4x4f &view, const m4x4f &projection) {
     ASSERT(transparentInstanceData.size() < std::numeric_limits<GLsizei>::max(),
            "Ensure safe cast");
 
-    glDrawArraysInstanced(GL_TRIANGLES, 0,
-                          static_cast<GLsizei>(CUBE_VERTICES.size()),
-                          static_cast<GLsizei>(transparentInstanceData.size()));
+    glDrawArraysInstanced(GL_TRIANGLES, 0, cast<GLsizei>(CUBE_VERTICES.size()),
+                          cast<GLsizei>(transparentInstanceData.size()));
     glDepthMask(GL_TRUE);
   }
 }
@@ -163,6 +162,12 @@ markBomb(std::vector<std::vector<std::vector<Cell>>> &cells, size_t x, size_t y,
          size_t z) noexcept {
 
   cells[z][y][x].isBomb = true;
+
+  // SOME HELPER LOOP AROUND OR SMTH HERE
+  // SOME HELPER LOOP AROUND OR SMTH HERE
+  // SOME HELPER LOOP AROUND OR SMTH HERE
+  // SOME HELPER LOOP AROUND OR SMTH HERE
+  // SOME HELPER LOOP AROUND OR SMTH HERE
 
   // Marking adjacent cells
   for (int dz = -1; dz < 2; ++dz) {

@@ -8,6 +8,7 @@
 #include "render/colors.hpp"
 #include "render/core.hpp"
 #include "render/program.hpp"
+#include "utility/cast.hpp"
 
 struct Cell {
   enum class State : std::uint8_t { Default, Dug, Flagged };
@@ -61,8 +62,8 @@ private:
   void loadCubeMesh(const std::span<const v3f> mesh,
                     const std::span<const v2f> textureCoords);
   bool setupVAO(GLuint &vertexArrayID, GLuint &cellInstanceBufferID);
-  void updateCubeInstanceData(
-      v3uz pointedCellCoordiantes = vec3(static_cast<size_t>(-1)));
+  void
+  updateCubeInstanceData(v3uz pointedCellCoordiantes = vec3(cast<size_t>(-1)));
 
   /**
    *  Whether cube at [z][y][x] that have a undug bomb around them should be
@@ -161,7 +162,7 @@ constexpr float Cell::getTextureIndex() const noexcept {
     return UNDUG_INDEX;
   }
   ASSERT(bombsAround >= 0 && bombsAround <= 26, "Got: {}", bombsAround);
-  return static_cast<float>(bombsAround);
+  return cast<float>(bombsAround);
 }
 
 [[nodiscard]] constexpr v3f

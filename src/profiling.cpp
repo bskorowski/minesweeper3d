@@ -1,6 +1,7 @@
 #include "profiling.hpp"
 #include "GLFW/glfw3.h"
 #include "imgui.h"
+#include "utility/cast.hpp"
 #include <cinttypes>
 #include <stdint.h>
 
@@ -16,7 +17,7 @@ void ProfilerData::draw() const {
   flags |= ImGuiWindowFlags_AlwaysAutoResize;
 
   ImGui::Begin("Frame data", nullptr, flags);
-  ImGui::Text("FPS: %d", static_cast<uint32_t>(1.0 / totalFrameMs * 1000.0));
+  ImGui::Text("FPS: %d", cast<uint32_t>(1.0 / totalFrameMs * 1000.0));
   ImGui::Text("Frame time [ms]: %.3f", totalFrameMs);
   ImGui::Text("CPU update time [ms]: %.3f", updateMs);
   ImGui::Text("CPU Render time [ms]: %.3f", cpuRenderMs);

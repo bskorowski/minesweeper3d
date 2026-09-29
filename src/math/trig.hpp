@@ -1,6 +1,7 @@
 #pragma once
 
 #include "debug.hpp"
+#include "utility/cast.hpp"
 #include <array>
 #include <cmath>
 #include <cstddef>
@@ -47,7 +48,7 @@ constexpr auto factorialsLookupMap = []() {
   std::uint32_t currPow = 1;
   double out = 1.0f;
 
-  double currValue = static_cast<double>(x);
+  double currValue = cast<double>(x);
   while (power > 0) {
     while (currPow * 2 <= power) {
       currPow = currPow * 2;
@@ -59,16 +60,16 @@ constexpr auto factorialsLookupMap = []() {
     currValue = x;
     currPow = 1;
   }
-  return static_cast<float>(out);
+  return cast<float>(out);
 }
 
 [[nodiscard]] constexpr double floor(double x) {
   if consteval {
-    if (x < static_cast<double>(std::numeric_limits<int64_t>::min()) ||
-        x > static_cast<double>(std::numeric_limits<int64_t>::max())) {
+    if (x < cast<double>(std::numeric_limits<int64_t>::min()) ||
+        x > cast<double>(std::numeric_limits<int64_t>::max())) {
       return x;
     }
-    double trunc = static_cast<double>(static_cast<int64_t>(x));
+    double trunc = cast<double>(cast<int64_t>(x));
     return trunc > x ? trunc - 1.0 : trunc;
 
   } else {
@@ -82,7 +83,7 @@ constexpr auto factorialsLookupMap = []() {
 [[nodiscard]] constexpr float cos_taylor(float fx) {
 
   constexpr double twoPI = std::numbers::pi * 2.0;
-  double x = static_cast<double>(fx < 0.0f ? -fx : fx);
+  double x = cast<double>(fx < 0.0f ? -fx : fx);
 
   // Normalize
   const double cycles = internal::floor(x / twoPI);
@@ -98,7 +99,7 @@ constexpr auto factorialsLookupMap = []() {
     term = term * ((-x2) / (i * (i - 1)));
     sum += term;
   }
-  return static_cast<float>(sum);
+  return cast<float>(sum);
 }
 
 } // namespace internal
@@ -114,8 +115,7 @@ constexpr auto factorialsLookupMap = []() {
 
 [[nodiscard]] constexpr float sin(float radians) {
   // moving by 3/2pi may lose some precision, but we accept it for now
-  return math::cos(static_cast<float>(static_cast<double>(radians) +
-                                      std::numbers::pi * 1.5));
+  return math::cos(cast<float>(cast<double>(radians) + std::numbers::pi * 1.5));
 }
 
 } // namespace math

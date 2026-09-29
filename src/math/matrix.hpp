@@ -93,7 +93,7 @@ castAs(const mat<T, Rows, Cols> &in) {
 
   for (std::size_t i = 0; i < Rows; ++i) {
     for (std::size_t j = 0; j < Cols; ++j) {
-      out.data[i][j] = static_cast<NewType>(in.data[i][j]);
+      out.data[i][j] = cast<NewType>(in.data[i][j]);
     }
   }
 
@@ -102,7 +102,7 @@ castAs(const mat<T, Rows, Cols> &in) {
 
 template <class Out, Numeric T, std::size_t Rows, std::size_t Cols>
 [[nodiscard]] constexpr const Out *dataPtrAs(const mat<T, Rows, Cols> &m) {
-  return static_cast<const Out *>(&(m.data[0][0]));
+  return cast<const Out *>(&(m.data[0][0]));
 }
 
 template <class T, std::size_t Rows, std::size_t Cols>
@@ -133,7 +133,7 @@ template <Numeric T, std::size_t Size>
 
 template <Numeric T, std::size_t Size>
 [[nodiscard]] constexpr mat<T, Size, Size> identity() {
-  return diagonal<T, Size>(static_cast<T>(1));
+  return diagonal<T, Size>(cast<T>(1));
 }
 
 template <Numeric T> [[nodiscard]] constexpr mat<T, 1, 2> vec2(T x, T y) {
@@ -256,7 +256,7 @@ template <Numeric T, std::size_t Rows, std::size_t Cols>
 template <Numeric T, std::size_t Cols>
 [[nodiscard]] constexpr T length(const mat<T, 1, Cols> &vec) {
   const T squareSum =
-      std::accumulate(vec.data[0].begin(), vec.data[0].end(), static_cast<T>(0),
+      std::accumulate(vec.data[0].begin(), vec.data[0].end(), cast<T>(0),
                       [](T sum, T number) { return sum + (number * number); });
 
   return sqrt(squareSum);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "debug.hpp"
+#include "utility/cast.hpp"
 #include <algorithm>
 #include <numeric>
 #include <random>
@@ -18,7 +19,7 @@ randomUniqueRange(IntType min, IntType max) noexcept {
   std::mt19937 rng{seed()};
 
   // Creating the vector filled with sorted range
-  std::vector<IntType> out(static_cast<size_t>(max - min + 1));
+  std::vector<IntType> out(cast<size_t>(max - min + 1));
   std::iota(out.begin(), out.end(), min);
 
   // Shuffling the sorted range

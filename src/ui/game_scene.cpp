@@ -1,10 +1,12 @@
 #include "game_scene.hpp"
 #include "application.hpp"
+#include "debug.hpp"
 #include "error.hpp"
 #include "imgui.h"
 #include "logzy/logzy.hpp"
 #include "math/matrix.hpp"
 #include "resource_manager.hpp"
+#include "utility/cast.hpp"
 
 namespace {
 constexpr v2u crosshairSize = vec2(10u, 10u);
@@ -125,15 +127,17 @@ void GameScene::handleInputs() {
 
 void GameScene::update() {
   const Settings &settings = Application::getSettings();
-  const float dt = Application::getDeltaTime();
+  const double dt = Application::getDeltaTime();
 
   // Camera lookaround movement
-  const float cameraXDelta = -cameraLookDelta_.x() * settings.sensitivity * dt;
-  const float cameraYDelta = cameraLookDelta_.y() * settings.sensitivity * dt;
+  const float cameraXDelta =
+      cast<float>(-cameraLookDelta_.x() * settings.sensitivity * dt);
+  const float cameraYDelta =
+      cast<float>(cameraLookDelta_.y() * settings.sensitivity * dt);
   camera_.rotate(vec3<float>(cameraYDelta, cameraXDelta, 0.0F));
 
   // Camera position movement
-  const float cameraTravelledDistance = settings.cameraSpeed * dt;
+  const float cameraTravelledDistance = cast<float>(settings.cameraSpeed * dt);
   camera_.move(cameraMoveDelta_, cameraTravelledDistance);
 };
 
@@ -143,7 +147,7 @@ void GameScene::draw() {
   constexpr float fov = 50.0f;
   constexpr float near = 0.01f;
   constexpr float far = 100.0f;
-  const float ratio = static_cast<float>(windowSize.x()) / windowSize.y();
+  const float ratio = cast<float>(windowSize.x()) / cast<float>(windowSize.y());
   auto persp = perspective(fov, ratio, near, far);
   ASSERT(ratio > 0.0f, "Ratio must be positive");
 
@@ -155,7 +159,8 @@ static void drawPauseMenu();
 void GameScene::updateAndDrawUI() {
   v2u windowSize = Application::getWindow().getSize();
 
-  auto ortho = orthographic(0.0f, windowSize.x(), 0.0F, windowSize.y(), -1.0f);
+  auto ortho = orthographic(0.0f, cast<float>(windowSize.x()), 0.0F,
+                            cast<float>(windowSize.y()), -1.0f);
   crosshair_.draw(ortho);
 
   if (profilerMenuOpen_) {

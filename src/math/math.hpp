@@ -9,7 +9,7 @@
 #include "matrix.hpp"
 
 [[nodiscard]] constexpr float radians(float degrees) {
-  return static_cast<float>(degrees * std::numbers::pi / 180.0F);
+  return cast<float>(degrees * std::numbers::pi / 180.0F);
 }
 
 [[nodiscard]] constexpr m4x4f orthographic(float left, float right,

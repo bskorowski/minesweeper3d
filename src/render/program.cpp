@@ -1,6 +1,7 @@
 #include "program.hpp"
 #include "glad.h"
 #include "logzy/logzy.hpp"
+#include "utility/cast.hpp"
 
 [[nodiscard]] std::optional<Program>
 Program::create(const std::vector<std::pair<std::string_view, Shader::Type>>
@@ -90,13 +91,13 @@ bool Program::setBool(const std::string &name, const bool value) const {
     return false;
   }
 
-  glUniform1i(*locOpt, static_cast<GLint>(value));
+  glUniform1i(*locOpt, cast<GLint>(value));
 
   return true;
 }
 
 void Program::setBool(const GLint location, const bool value) const {
-  glUniform1i(location, static_cast<GLint>(value));
+  glUniform1i(location, cast<GLint>(value));
 }
 
 bool Program::setM4x4(const std::string &name, const m4x4f &matrix) const {
@@ -159,13 +160,13 @@ bool Program::setFloat(const std::string &name, float value) const {
     return false;
   }
 
-  glUniform1f(*locOpt, static_cast<GLfloat>(value));
+  glUniform1f(*locOpt, cast<GLfloat>(value));
 
   return true;
 }
 
 void Program::setFloat(GLint location, float value) const {
-  glUniform1f(location, static_cast<GLfloat>(value));
+  glUniform1f(location, cast<GLfloat>(value));
 }
 
 bool Program::setInt(const std::string &name, int value) const {

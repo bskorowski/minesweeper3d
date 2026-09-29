@@ -8,19 +8,12 @@ project(minesweeper3d)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
    # We need to use clang's linker, as it threw many 'duplicate section' errors on Windows + MSYS2 and 'print' header
    add_link_options("-fuse-ld=lld")
 endif()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-   # Enable standard-compliant preprocessor, 
-   add_compile_options(/Zc:preprocessor)
-   # make sure value of __cplusplus macro is correct
-   add_compile_options(/Zc:__cplusplus)
-   # Enable standard c++ stack unwinding, extern "c" never throw c++ exceptions
-   add_compile_options(/EHsc)
-endif()
 
 add_library(
    minesweeper3d-lib
@@ -74,15 +67,24 @@ add_executable(minesweeper3d
    ./vendor/glad/glad.c
 )
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+   # Enable standard-compliant preprocessor
+   target_compile_options(minesweeper3d-lib PRIVATE /Zc:preprocessor)
+   # make sure value of __cplusplus macro is correct
+   target_compile_options(minesweeper3d-lib PRIVATE /Zc:__cplusplus)
+   # Enable standard c++ stack unwinding, extern "c" never throw c++ exceptions
+   target_compile_options(minesweeper3d-lib PRIVATE /EHsc)
+endif()
+
 if(ENABLE_DEBUG_UTILS)
    target_compile_definitions(minesweeper3d-lib PUBLIC ENABLE_DEBUG_UTILS)
    target_compile_definitions(minesweeper3d PUBLIC ENABLE_DEBUG_UTILS)
 endif()
 
-target_compile_options(minesweeper3d-lib PUBLIC
+# Enable warnings
+target_compile_options(minesweeper3d-lib PRIVATE
   "$<$<CXX_COMPILER_ID:MSVC>:/W4>"
-  "$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall;-Wextra;-Wpedantic>")
-
+  "$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall;-Wextra;-Wpedantic;-Wconversion>")
 
 # This caused issues when includign glad
 target_compile_definitions(minesweeper3d-lib PUBLIC GLFW_INCLUDE_NONE)

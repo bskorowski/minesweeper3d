@@ -34,7 +34,7 @@ struct Camera {
     return lookAt(position, reverseDirection, up, right);
   }
 
-  constexpr v3f getDirection() { return reverseDirection * -1; }
+  constexpr v3f getDirection() { return reverseDirection * -1.0f; }
 
   /**
    * Moves the camera by the given delta position

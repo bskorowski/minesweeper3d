@@ -90,47 +90,47 @@ struct Input {
   void update(const Window &window) noexcept;
 
   [[nodiscard]] constexpr bool isPressed(Key k) const noexcept {
-    return keyStates[static_cast<size_t>(k)] == KeyState::Pressed;
+    return keyStates[std::to_underlying(k)] == KeyState::Pressed;
   }
 
   [[nodiscard]] constexpr bool isReleased(Key k) const noexcept {
-    return keyStates[static_cast<size_t>(k)] == KeyState::Released;
+    return keyStates[std::to_underlying(k)] == KeyState::Released;
   }
 
   [[nodiscard]] constexpr bool isHeld(Key k) const noexcept {
-    return keyStates[static_cast<size_t>(k)] == KeyState::Held;
+    return keyStates[std::to_underlying(k)] == KeyState::Held;
   }
 
   [[nodiscard]] constexpr bool isUp(Key k) const noexcept {
-    return keyStates[static_cast<size_t>(k)] == KeyState::Idle ||
-           keyStates[static_cast<size_t>(k)] == KeyState::Released;
+    return keyStates[std::to_underlying(k)] == KeyState::Idle ||
+           keyStates[std::to_underlying(k)] == KeyState::Released;
   }
 
   [[nodiscard]] constexpr bool isDown(Key k) const noexcept {
-    return keyStates[static_cast<size_t>(k)] == KeyState::Pressed ||
-           keyStates[static_cast<size_t>(k)] == KeyState::Held;
+    return keyStates[std::to_underlying(k)] == KeyState::Pressed ||
+           keyStates[std::to_underlying(k)] == KeyState::Held;
   }
 
   [[nodiscard]] constexpr bool isPressed(MouseButton k) const noexcept {
-    return mouseStates[static_cast<size_t>(k)] == KeyState::Pressed;
+    return mouseStates[std::to_underlying(k)] == KeyState::Pressed;
   }
 
   [[nodiscard]] constexpr bool isReleased(MouseButton k) const noexcept {
-    return mouseStates[static_cast<size_t>(k)] == KeyState::Released;
+    return mouseStates[std::to_underlying(k)] == KeyState::Released;
   }
 
   [[nodiscard]] constexpr bool isHeld(MouseButton k) const noexcept {
-    return mouseStates[static_cast<size_t>(k)] == KeyState::Held;
+    return mouseStates[std::to_underlying(k)] == KeyState::Held;
   }
 
   [[nodiscard]] constexpr bool isUp(MouseButton k) const noexcept {
-    return mouseStates[static_cast<size_t>(k)] == KeyState::Idle ||
-           mouseStates[static_cast<size_t>(k)] == KeyState::Released;
+    return mouseStates[std::to_underlying(k)] == KeyState::Idle ||
+           mouseStates[std::to_underlying(k)] == KeyState::Released;
   }
 
   [[nodiscard]] constexpr bool isDown(MouseButton k) const noexcept {
-    return mouseStates[static_cast<size_t>(k)] == KeyState::Pressed ||
-           mouseStates[static_cast<size_t>(k)] == KeyState::Held;
+    return mouseStates[std::to_underlying(k)] == KeyState::Pressed ||
+           mouseStates[std::to_underlying(k)] == KeyState::Held;
   }
 
   [[nodiscard]] constexpr v2d getMouseDelta() const noexcept {
@@ -139,10 +139,10 @@ struct Input {
 
 private:
   // Keyboard
-  std::array<KeyState, static_cast<size_t>(Key::__SizeGuard)> keyStates{};
+  std::array<KeyState, std::to_underlying(Key::__SizeGuard)> keyStates{};
 
   // Mouse
-  std::array<KeyState, static_cast<size_t>(MouseButton::__SizeGuard)>
+  std::array<KeyState, std::to_underlying(MouseButton::__SizeGuard)>
       mouseStates{};
 
   v2d lastMousePosition{};
