@@ -1,9 +1,16 @@
 [submodule "vendor/logzy"]
 	path = vendor/logzy
 	url = https://github.com/bskorowski/logzy
+        shallow = true
 [submodule "vendor/glfw"]
 	path = vendor/glfw
 	url = https://github.com/glfw/glfw
+        shallow = true
 [submodule "vendor/tasty"]
 	path = vendor/tasty
 	url = https://github.com/bskorowski/tasty
+        shallow = true
+[submodule "vendor/imgui"]
+	path = vendor/imgui
+	url = https://github.com/ocornut/imgui
+        shallow = true

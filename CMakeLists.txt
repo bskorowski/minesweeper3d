@@ -67,21 +67,6 @@ add_library(
    ./src/ui/game_scene.cpp
    ./src/ui/game_scene.hpp
 
-   # TODO :: CMakeLists for imgui
-   ./vendor/imgui/imconfig.h
-   ./vendor/imgui/imgui.h
-   ./vendor/imgui/imgui.cpp
-   ./vendor/imgui/imgui_draw.cpp
-   ./vendor/imgui/imgui_impl_glfw.cpp
-   ./vendor/imgui/imgui_impl_glfw.h
-   ./vendor/imgui/imgui_impl_opengl3.cpp
-   ./vendor/imgui/imgui_impl_opengl3.h
-   ./vendor/imgui/imgui_internal.h
-   ./vendor/imgui/imgui_tables.cpp
-   ./vendor/imgui/imgui_widgets.cpp
-   ./vendor/imgui/imstb_rectpack.h
-   ./vendor/imgui/imstb_textedit.h
-   ./vendor/imgui/imstb_truetype.h
 )
 
 add_executable(minesweeper3d
@@ -117,14 +102,14 @@ set(GLFW_BUILD_EXAMPLES ON CACHE BOOL "" FORCE)
 add_subdirectory(vendor/tasty SYSTEM)
 add_subdirectory(vendor/logzy SYSTEM)
 add_subdirectory(vendor/glfw SYSTEM)
-include_directories(vendor/glad)
-include_directories(vendor/stb)
-include_directories(vendor/imgui/)
+include_directories(SYSTEM vendor/glad)
+include_directories(SYSTEM vendor/stb)
+include(./cmake/imgui-lib.cmake)
 
 find_package(OpenGL REQUIRED)
 
 target_link_libraries(minesweeper3d-lib 
-    OpenGL::GL logzy::logzy glfw
+    OpenGL::GL logzy::logzy glfw imgui
     $<$<CXX_COMPILER_ID:Clang>:stdc++exp>
 )
 target_link_libraries(minesweeper3d minesweeper3d-lib)
