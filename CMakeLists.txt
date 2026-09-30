@@ -69,11 +69,11 @@ add_executable(minesweeper3d
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
    # Enable standard-compliant preprocessor
-   target_compile_options(minesweeper3d-lib PRIVATE /Zc:preprocessor)
+   target_compile_options(minesweeper3d-lib PUBLIC /Zc:preprocessor)
    # make sure value of __cplusplus macro is correct
-   target_compile_options(minesweeper3d-lib PRIVATE /Zc:__cplusplus)
+   target_compile_options(minesweeper3d-lib PUBLIC /Zc:__cplusplus)
    # Enable standard c++ stack unwinding, extern "c" never throw c++ exceptions
-   target_compile_options(minesweeper3d-lib PRIVATE /EHsc)
+   target_compile_options(minesweeper3d-lib PUBLIC /EHsc)
 endif()
 
 if(ENABLE_DEBUG_UTILS)
@@ -82,7 +82,7 @@ if(ENABLE_DEBUG_UTILS)
 endif()
 
 # Enable warnings
-target_compile_options(minesweeper3d-lib PRIVATE
+target_compile_options(minesweeper3d-lib PUBLIC
   "$<$<CXX_COMPILER_ID:MSVC>:/W4>"
   "$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall;-Wextra;-Wpedantic;-Wconversion>")
 
