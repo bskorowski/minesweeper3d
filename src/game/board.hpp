@@ -168,8 +168,9 @@ constexpr float Cell::getTextureIndex() const noexcept {
 [[nodiscard]] constexpr v3f
 Board::cellCenterPosition(v3uz cellCoords) const noexcept {
   const float cellOffset = cellSize + CELL_SPACING;
-  return vec3<float>(cellCoords.x() * cellOffset, cellCoords.y() * cellOffset,
-                     cellCoords.z() * cellOffset);
+  return vec3<float>(cast<float>(cellCoords.x()) * cellOffset,
+                     cast<float>(cellCoords.y()) * cellOffset,
+                     cast<float>(cellCoords.z()) * cellOffset);
 }
 
 #include <format>

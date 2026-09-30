@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utility/cast.hpp"
 #include <array>
 #include <concepts>
 #include <logzy/logzy.hpp>
@@ -102,7 +103,7 @@ castAs(const mat<T, Rows, Cols> &in) {
 
 template <class Out, Numeric T, std::size_t Rows, std::size_t Cols>
 [[nodiscard]] constexpr const Out *dataPtrAs(const mat<T, Rows, Cols> &m) {
-  return cast<const Out *>(&(m.data[0][0]));
+  return static_cast<const Out *>(&(m.data[0][0]));
 }
 
 template <class T, std::size_t Rows, std::size_t Cols>

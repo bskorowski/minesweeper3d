@@ -14,6 +14,7 @@
 #include "settings.hpp"
 #include "ui/main_menu_scene.hpp"
 #include "ui/scene.hpp"
+#include "utility/cast.hpp"
 #include <GLFW/glfw3.h>
 #include <logzy/logzy.hpp>
 #include <memory>
@@ -111,11 +112,11 @@ void Application::run() {
     {
       ScopedTimer renderTimer(profilerData_.cpuRenderMs);
       // Writing
-      const int frontBuffer = profilerData_.frameCounter % queryBuffers;
+      const int frontBuffer =
+          cast<uint32_t>(profilerData_.frameCounter) % queryBuffers;
       // Reading buffer delayed by queryBuffers-1 frames
       const int backBuffer =
-          (profilerData_.frameCounter - (queryBuffers - 1) + queryBuffers) %
-          queryBuffers;
+          (cast<uint32_t>(profilerData_.frameCounter) + 1) % queryBuffers;
 
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glBeginQuery(GL_TIME_ELAPSED, queryID[frontBuffer]);
@@ -131,7 +132,7 @@ void Application::run() {
         GLuint64 nanosElapsed = 0;
         glGetQueryObjectui64v(queryID[backBuffer], GL_QUERY_RESULT,
                               &nanosElapsed);
-        profilerData_.gpuRenderMs = nanosElapsed / 1'000'000.0;
+        profilerData_.gpuRenderMs = cast<double>(nanosElapsed) / 1'000'000.0;
       }
     }
     {

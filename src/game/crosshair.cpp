@@ -53,10 +53,11 @@ Crosshair::Crosshair(v2u screenSize, v2u size, v3f color) {
     logzy::error("coulnd't get projectioin uniform location for crosshair");
   }
   shaderProgram.setM4x4(
-      "model",
-      scale(translate(identity<float, 4>(),
-                      vec3(screenSize.x() * 0.5f, screenSize.y() * 0.5f, 0.0f)),
-            vec3(size.x() * 1.0f, size.y() * 1.0f, 1.0f)));
+      "model", scale(translate(identity<float, 4>(),
+                               vec3(cast<float>(screenSize.x()) * 0.5f,
+                                    cast<float>(screenSize.y()) * 0.5f, 0.0f)),
+                     vec3(cast<float>(size.x()) * 1.0f,
+                          cast<float>(size.y()) * 1.0f, 1.0f)));
   shaderProgram.setV3f("color", color);
 
   glGenVertexArrays(1, &vao);
