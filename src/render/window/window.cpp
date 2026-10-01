@@ -10,8 +10,9 @@ Window::Window(WindowParams params)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, constants::OPENGL_VERSION_MINOR);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  handle_ = glfwCreateWindow(params.size.x(), params.size.y(),
-                             params.title.c_str(), nullptr, nullptr);
+  handle_ =
+      glfwCreateWindow(cast<int>(params.size.x()), cast<int>(params.size.y()),
+                       params.title.c_str(), nullptr, nullptr);
 
   if (handle_ == nullptr) {
     throw ERR(

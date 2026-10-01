@@ -2,6 +2,7 @@
 #include "error.hpp"
 #include "glad.h"
 #include "math/math.hpp"
+#include "render/core.hpp"
 #include "render/mesh.hpp"
 #include "render/program.hpp"
 #include <stdexcept>
@@ -70,7 +71,7 @@ Crosshair::Crosshair(v2u screenSize, v2u size, v3f color) {
   glBufferData(GL_ARRAY_BUFFER, bufSizeBytes, SQUARE_VERTICES.data(),
                GL_STATIC_DRAW);
 
-  GLuint vPosLocation = 0;
+  GLint vPosLocation = render::SUNSET;
   if (auto vPosOpt = programOpt->getAttribLocation("vPos")) {
     vPosLocation = *vPosOpt;
   }

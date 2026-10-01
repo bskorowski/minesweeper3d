@@ -4,6 +4,7 @@
 #include <limits>
 #include <logzy/logzy.hpp>
 #include <ranges>
+#include <type_traits>
 #include <unordered_map>
 
 #include "debug.hpp"
@@ -15,6 +16,91 @@
 #include "render/mesh.hpp"
 #include "resource_manager.hpp"
 #include "utility/cast.hpp"
+#include <concepts>
+
+namespace {
+
+constexpr bool within(v3uz space, v3uz coordinates) noexcept {
+  // size_t is always >= 0, so skipping that check
+  return coordinates.x() < space.x() && coordinates.y() < space.y() &&
+         coordinates.z() < space.z();
+}
+
+// Returns all indices around {pos}, that are valid inside {boardSize}.
+// Callback should take v3uz parameter, which would represent a valid in-board
+// position.
+// Optionally Callback may aslo return a bool. In this case return true from the
+// function will terminate the looping early on first 'true'
+template <class ValidPositionCallback>
+constexpr void loopAroundPos(v3uz boardSize, v3uz pos,
+                             ValidPositionCallback &&cb) noexcept {
+  ASSERT(boardSize.x() > 0 && boardSize.y() > 0 && boardSize.z() > 0,
+         "Cells must be non-empty");
+
+  v3uz begin = vec3(std::min(pos.x() - 1uz, 0uz), std::min(pos.y() - 1uz, 0uz),
+                    std::min(pos.z() - 1uz, 0uz));
+
+  v3uz end = vec3(std::min(pos.x() + 2uz, boardSize.x()),
+                  std::min(pos.y() + 2uz, boardSize.y()),
+                  std::min(pos.z() + 2uz, boardSize.z()));
+
+  for (auto z = begin.z(); z != end.z(); ++z) {
+    for (auto y = begin.y(); y != end.y(); ++y) {
+      for (auto x = begin.x(); x != end.x(); ++x) {
+        if (!within(boardSize, vec3(x, y, z))) {
+          continue;
+        }
+        constexpr bool returnsBool =
+            std::same_as<std::invoke_result_t<ValidPositionCallback &, v3uz>,
+                         bool>;
+        if constexpr (returnsBool) {
+          bool doStop = cb(vec3(x, y, z));
+          if (doStop) {
+            return;
+          }
+        } else {
+          cb(vec3(x, y, z));
+        }
+      }
+    }
+  }
+}
+
+constexpr void digDFS(std::vector<std::vector<std::vector<Cell>>> &cells,
+                      size_t x, size_t y, size_t z) noexcept {
+  auto &cell = cells[z][y][x];
+  ASSERT(cell.state == Cell::State::Default,
+         "Passed coordiantes shouldn't be dug or flagged "
+         "(==Cell::State::Default)");
+
+  cells[z][y][x].state = Cell::State::Dug;
+
+  if (cell.bombsAround > 0 || cell.isBomb) {
+    return;
+  }
+
+  ASSERT(cells.size() > 0 && cells[0].size() > 0 && cells[0][0].size(),
+         "Board must be non-empty");
+  loopAroundPos(vec3(cells[0][0].size(), cells[0].size(), cells.size()),
+                vec3(x, y, z), [&](v3uz pos) {
+                  const Cell &cell = cells[pos.z()][pos.y()][pos.x()];
+                  if (cell.state != Cell::State::Default) {
+                    return;
+                  }
+                  digDFS(cells, pos.x(), pos.y(), pos.z());
+                });
+}
+
+constexpr void markBomb(std::vector<std::vector<std::vector<Cell>>> &cells,
+                        size_t x, size_t y, size_t z) noexcept {
+
+  cells[z][y][x].isBomb = true;
+
+  loopAroundPos(
+      vec3(cells[0][0].size(), cells[0].size(), cells.size()), vec3(x, y, z),
+      [&](v3uz pos) { ++cells[pos.z()][pos.y()][pos.x()].bombsAround; });
+}
+} // namespace
 
 void Board::draw(const m4x4f &view, const m4x4f &projection) {
 
@@ -150,43 +236,6 @@ Board::getPointedCell(v3f playerPos, v3f playerDir) const noexcept {
   return pointedCell;
 }
 
-static constexpr bool
-withinBoard(const std::vector<std::vector<std::vector<Cell>>> &cells, size_t x,
-            size_t y, size_t z) noexcept {
-  // size_t is always >= 0, so skipping that check
-  return x < cells[0][0].size() && y < cells[0].size() && z < cells.size();
-}
-
-constexpr static void
-markBomb(std::vector<std::vector<std::vector<Cell>>> &cells, size_t x, size_t y,
-         size_t z) noexcept {
-
-  cells[z][y][x].isBomb = true;
-
-  // SOME HELPER LOOP AROUND OR SMTH HERE
-  // SOME HELPER LOOP AROUND OR SMTH HERE
-  // SOME HELPER LOOP AROUND OR SMTH HERE
-  // SOME HELPER LOOP AROUND OR SMTH HERE
-  // SOME HELPER LOOP AROUND OR SMTH HERE
-
-  // Marking adjacent cells
-  for (int dz = -1; dz < 2; ++dz) {
-    for (int dy = -1; dy < 2; ++dy) {
-      for (int dx = -1; dx < 2; ++dx) {
-        if (dz == 0 && dy == 0 && dx == 0) [[unlikely]] {
-          continue;
-        }
-        size_t newX = x + dx;
-        size_t newY = y + dy;
-        size_t newZ = z + dz;
-        if (withinBoard(cells, newX, newY, newZ)) {
-          ++cells[newZ][newY][newX].bombsAround;
-        }
-      }
-    }
-  }
-}
-
 [[nodiscard]] std::vector<std::vector<std::vector<Cell>>>
 Board::generateBoard(const v3uz dimensions, std::uint32_t bombs) {
   logzy::debug("Creating board");
@@ -217,38 +266,6 @@ Board::generateBoard(const v3uz dimensions, std::uint32_t bombs) {
   logzy::debug("Board created");
 
   return cells;
-}
-
-static constexpr void digDFS(std::vector<std::vector<std::vector<Cell>>> &cells,
-                             size_t x, size_t y, size_t z) noexcept {
-  auto &cell = cells[z][y][x];
-  ASSERT(cell.state == Cell::State::Default,
-         "Passed coordiantes shouldn't be dug or flagged "
-         "(==Cell::State::Default)");
-
-  cells[z][y][x].state = Cell::State::Dug;
-
-  if (cell.bombsAround > 0 || cell.isBomb) {
-    return;
-  }
-
-  for (int dz = -1; dz < 2; ++dz) {
-    for (int dy = -1; dy < 2; ++dy) {
-      for (int dx = -1; dx < 2; ++dx) {
-        if (dz == 0 && dy == 0 && dx == 0) [[unlikely]] {
-          continue;
-        }
-        size_t newX = x + dx;
-        size_t newY = y + dy;
-        size_t newZ = z + dz;
-
-        if (withinBoard(cells, newX, newY, newZ) &&
-            cells[newZ][newY][newX].state == Cell::State::Default) {
-          digDFS(cells, newX, newY, newZ);
-        }
-      }
-    }
-  }
 }
 
 void Board::dig(v3uz coords) noexcept {
@@ -406,27 +423,20 @@ void Board::loadCubeMesh(const std::span<const v3f> mesh,
     return false;
   }
 
-  for (int dz = -1; dz < 2; ++dz) {
-    for (int dy = -1; dy < 2; ++dy) {
-      for (int dx = -1; dx < 2; ++dx) {
-        if (dx == 0 && dy == 0 && dz == 0) [[unlikely]] {
-          continue;
-        }
-        size_t newX = x + dx;
-        size_t newY = y + dy;
-        size_t newZ = z + dz;
-        if (!withinBoard(cells_, newX, newY, newZ)) {
-          continue;
-        }
-        const auto &adjacentCell = cells_[newZ][newY][newX];
-        if (adjacentCell.state != Cell::State::Dug) {
-          return true;
-        }
-      }
-    }
-  }
+  ASSERT(cells_.size() > 0 && cells_[0].size() > 0 && cells_[0][0].size(),
+         "Board must be non-empty");
+  bool found = false;
+  loopAroundPos(vec3(cells_[0][0].size(), cells_[0].size(), cells_.size()),
+                vec3(x, y, z), [&](v3uz pos) {
+                  const Cell &adjacentCell = cells_[pos.z()][pos.y()][pos.x()];
+                  if (adjacentCell.state != Cell::State::Dug) {
+                    found = true;
+                    return found;
+                  }
+                  return false;
+                });
 
-  return false;
+  return found;
 }
 
 void Board::updateCubeInstanceData(v3uz pointedCellCoordiantes) {

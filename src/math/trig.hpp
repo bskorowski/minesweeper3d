@@ -4,10 +4,10 @@
 #include "utility/cast.hpp"
 #include <array>
 #include <cmath>
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
-#include <exception>
 #include <limits>
 #include <numbers>
 
@@ -23,7 +23,7 @@ constexpr void compileTimeError(const char *msg) { throw msg; }
 
 constexpr auto factorialsLookupMap = []() {
   std::array<std::uint64_t, 21> t{1};
-  for (int i = 1; i < 21; ++i) {
+  for (size_t i = 1uz; i < 21uz; ++i) {
     t[i] = t[i - 1] * i;
   }
   return t;
@@ -43,22 +43,24 @@ constexpr auto factorialsLookupMap = []() {
   return factorialsLookupMap[x];
 }
 
-[[nodiscard]] constexpr float pow(float x, std::uint32_t power) noexcept {
+template <std::integral PowerType>
+[[nodiscard]] constexpr float pow(float x, PowerType power) noexcept {
+  ASSERT(power > 0, "Positive powers only but got {}", power);
 
-  std::uint32_t currPow = 1;
+  PowerType currPow = 1;
   double out = 1.0f;
 
   double currValue = cast<double>(x);
   while (power > 0) {
-    while (currPow * 2 <= power) {
-      currPow = currPow * 2;
+    while (currPow * castOrSame<PowerType>(2) <= power) {
+      currPow = currPow * castOrSame<PowerType>(2);
       currValue = currValue * currValue;
     }
 
     out = out * currValue;
     power = power - currPow;
     currValue = x;
-    currPow = 1;
+    currPow = castOrSame<PowerType>(1);
   }
   return cast<float>(out);
 }

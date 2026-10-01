@@ -26,7 +26,7 @@ int main() {
         for (float x = 1.0f; x < 10.0f; x += 0.5f) {
           for (size_t i = 0; i < 32; ++i) {
             tasty::expectEqual(std::round(math::internal::pow(x, i)),
-                               std::round(std::powf(x, i)));
+                               std::round(std::pow(x, i)));
           }
         }
       },

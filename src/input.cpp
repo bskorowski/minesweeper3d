@@ -1,7 +1,6 @@
 #include "input.hpp"
 #include "GLFW/glfw3.h"
 #include "render/window/window.hpp"
-#include <type_traits>
 #include <utility>
 
 using GLFWKeyCode = int;
@@ -99,7 +98,7 @@ void Input::update(const Window &window) noexcept {
 
   // Updating mouse click states
   constexpr auto mouseButtons = std::to_underlying(MouseButton::__SizeGuard);
-  for (int32_t i = 0; i < mouseButtons; ++i) {
+  for (std::uint8_t i = 0; i < mouseButtons; ++i) {
     MouseButton b = static_cast<MouseButton>(i);
     GLFWMouseButton GLFWcode = mouseButtonToGLFW(b);
 

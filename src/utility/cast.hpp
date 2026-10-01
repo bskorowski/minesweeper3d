@@ -1,6 +1,7 @@
 #pragma once
 
 #include "debug.hpp"
+#include "utility/types.hpp"
 #include <cmath>
 #include <concepts>
 #include <limits>
@@ -10,8 +11,7 @@
 // so for example for double->float 0.1 representation differs, but it is
 // considered acceptable
 template <typename Target, typename Source>
-  requires((std::integral<Target> || std::floating_point<Target>) &&
-           (std::integral<Source> || std::floating_point<Source>))
+  requires((Numeric<Source>) && (Numeric<Target>))
 constexpr bool inRange(Source value) noexcept {
 
   using SourceLimit = std::numeric_limits<Source>;
@@ -57,14 +57,31 @@ constexpr bool inRange(Source value) noexcept {
   }
 }
 
-template <typename Target, typename Source>
-  requires((std::integral<Target> || std::floating_point<Target>) &&
-           (std::integral<Source> || std::floating_point<Source>))
-constexpr Target cast(Source value) noexcept {
-  static_assert(!std::same_as<Source, Target>,
+// General purpose cast, designed to be the most common type of cast.
+template <class Target, class Source>
+constexpr auto cast(Source &&source) noexcept -> decltype(auto) {
+
+  static_assert(!isSameType<Source, Target>(),
                 "Trying to cast type to itself is useless");
-  ASSERT(inRange<Target>(value), "Value of type '{}({})' outside of {}({})",
-         typeid(Source).name(), value, typeid(Target).name(),
-         static_cast<Target>(value));
-  return static_cast<Target>(value);
+
+  if constexpr (Numeric<Target> && Numeric<Source>) {
+    ASSERT(inRange<Target>(source), "Value of type '{}({})' outside of {}({}) ",
+           typeid(Source).name(), source, typeid(Target).name(),
+           static_cast<Target>(source));
+  }
+
+  return static_cast<Target>(std::forward<Source>(source));
+}
+
+// Special type of casting, allowing casting to the same type.
+// Most useful in templates, or other forms of code, where casting to the same
+// type does not necessarily mean an error
+template <class Target, class Source>
+constexpr auto castOrSame(Source &&source) noexcept -> decltype(auto) {
+
+  if constexpr (isSameType<Source, Target>()) {
+    return std::forward<Source>(source);
+  } else {
+    return cast<Target>(std::forward<Source>(source));
+  }
 }

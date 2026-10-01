@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utility/cast.hpp"
+#include "utility/types.hpp"
 #include <array>
 #include <concepts>
 #include <logzy/logzy.hpp>
@@ -12,9 +13,6 @@
 // TODO :: Allow multiplication of matrice with different sizes
 // TODO :: iterator for matrix
 // TODO :: Maybe separate the vector template class from mat template
-
-template <typename T>
-concept Numeric = std::integral<T> || std::floating_point<T>;
 
 template <Numeric T, std::size_t Rows, std::size_t Cols> struct mat {
   /**
