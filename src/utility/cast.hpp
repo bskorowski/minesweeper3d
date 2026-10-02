@@ -59,15 +59,19 @@ constexpr bool inRange(Source value) noexcept {
 
 // General purpose cast, designed to be the most common type of cast.
 template <class Target, class Source>
-constexpr auto cast(Source &&source) noexcept -> decltype(auto) {
+constexpr auto
+cast(Source &&source DEBUG_ONLY(, const std::source_location &sourceLoc =
+                                      std::source_location::current())) noexcept
+    -> decltype(auto) {
 
   static_assert(!isSameType<Source, Target>(),
                 "Trying to cast type to itself is useless");
 
   if constexpr (Numeric<Target> && Numeric<Source>) {
-    ASSERT(inRange<Target>(source), "Value of type '{}({})' outside of {}({}) ",
-           typeid(Source).name(), source, typeid(Target).name(),
-           static_cast<Target>(source));
+    ASSERT_LOC(inRange<Target>(source), sourceLoc,
+               "Value of type '{}({})' outside of {}({}) ",
+               typeid(Source).name(), source, typeid(Target).name(),
+               static_cast<Target>(source));
   }
 
   return static_cast<Target>(std::forward<Source>(source));
@@ -77,11 +81,13 @@ constexpr auto cast(Source &&source) noexcept -> decltype(auto) {
 // Most useful in templates, or other forms of code, where casting to the same
 // type does not necessarily mean an error
 template <class Target, class Source>
-constexpr auto castOrSame(Source &&source) noexcept -> decltype(auto) {
+constexpr auto castOrSame(Source &&source DEBUG_ONLY(
+    , const std::source_location &sourceLoc =
+          std::source_location::current())) noexcept -> decltype(auto) {
 
   if constexpr (isSameType<Source, Target>()) {
     return std::forward<Source>(source);
   } else {
-    return cast<Target>(std::forward<Source>(source));
+    return cast<Target>(std::forward<Source>(source) DEBUG_ONLY(, sourceLoc));
   }
 }

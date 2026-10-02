@@ -18,9 +18,9 @@ constexpr bool DEBUG = false; // NOLINT
 
 #define DEBUG_ONLY(...) __VA_ARGS__
 
-[[noreturn]] inline void handleAssertFail(
-    std::string_view expr, std::string_view message,
-    const std::source_location &sourceLoc = std::source_location::current()) {
+[[noreturn]] inline void
+handleAssertFail(std::string_view expr, std::string_view message,
+                 const std::source_location &sourceLoc) {
   std::cerr << "\nAssertion failed\n";
   std::cerr << "Expression: " << expr << '\n';
   if (!message.empty()) {
@@ -39,11 +39,18 @@ constexpr bool DEBUG = false; // NOLINT
 
 #define GET_FIRST(First, ...) First // NOLINT
 
-#define ASSERT(expr, ...)                                                      \
+// "Generic" assert, with no default arguments. Used when there is a need to
+// explicitly provide the arguments instead of using the default ones
+#define ASSERT_LOC(expr, sourceLoc, ...)                                       \
   (static_cast<bool>(expr)                                                     \
        ? void(0)                                                               \
        : handleAssertFail(                                                     \
-             #expr, GET_FIRST(__VA_OPT__(std::format(__VA_ARGS__), ) "")));
+             #expr, GET_FIRST(__VA_OPT__(std::format(__VA_ARGS__), ) ""),      \
+             sourceLoc));
+
+// Standard assertion for general purposes.
+#define ASSERT(expr, ...)                                                      \
+  ASSERT_LOC(expr, std::source_location::current(), __VA_ARGS__)
 
 #else
 
@@ -52,6 +59,7 @@ constexpr bool DEBUG = true; // NOLINT
 } // namespace debugutils
 
 #define DEBUG_ONLY(...)
+#define ASSERT_LOC(...)
 #define ASSERT(...)
 
 #endif

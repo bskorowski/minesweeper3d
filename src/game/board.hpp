@@ -62,8 +62,7 @@ private:
   void loadCubeMesh(const std::span<const v3f> mesh,
                     const std::span<const v2f> textureCoords);
   bool setupVAO(GLuint &vertexArrayID, GLuint &cellInstanceBufferID);
-  void
-  updateCubeInstanceData(v3uz pointedCellCoordiantes = vec3(cast<size_t>(-1)));
+  void updateCubeInstanceData(v3uz pointedCellCoordiantes = vec3(-1uz));
 
   /**
    *  Whether cube at [z][y][x] that have a undug bomb around them should be
