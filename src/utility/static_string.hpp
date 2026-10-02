@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <string_view>
 
 template <std::size_t Size> struct static_string {
@@ -17,7 +18,7 @@ template <std::size_t Size> struct static_string {
     std::ranges::copy_n(str, Size, data.begin());
   }
 
-  constexpr void write(std::string_view str, std::size_t offset = 0) {
+  constexpr void write(std::string_view str, std::ptrdiff_t offset = 0) {
     std::size_t toWrite = std::min(str.size(), size() - offset);
     std::ranges::copy_n(str.begin(), toWrite, std::next(data.begin(), offset));
   }

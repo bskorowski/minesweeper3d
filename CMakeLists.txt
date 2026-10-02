@@ -82,7 +82,7 @@ if(ENABLE_DEBUG_UTILS)
 endif()
 
 # Enable warnings
-target_compile_options(minesweeper3d-lib PUBLIC
+target_compile_options(minesweeper3d-lib PRIVATE
   "$<$<CXX_COMPILER_ID:MSVC>:/W4>"
   "$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall;-Wextra;-Wpedantic;-Wconversion>")
 
