@@ -51,6 +51,8 @@ add_library(
    ./src/ui/components/core.hpp
    ./src/ui/components/core.cpp
    ./src/ui/components/modifier.hpp
+   ./src/ui/components/components.cpp
+   ./src/ui/components/components.hpp
 
    ./src/render/window/window.hpp
    ./src/render/window/window.cpp

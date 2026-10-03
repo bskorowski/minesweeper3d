@@ -1,8 +1,7 @@
 #include "main_menu_scene.hpp"
 #include "application.hpp"
-#define IMGUI_DEFINE_MATH_OPERATORS
+#include "components/components.hpp"
 #include "imgui.h"
-#include "imgui_internal.h"
 #include "ui/components/modifier.hpp"
 #include "ui/game_scene.hpp"
 
@@ -18,24 +17,12 @@ void MainMenuScene::updateAndDrawUI() {
   flags |= ImGuiWindowFlags_NoMove;
 
   ImGui::Begin("Settings", nullptr, flags);
-  {
-    ImVec2 cursorBeforeMenu = ImGui::GetCursorPos();
-    ImGui::SetWindowFontScale(7.0f);
-    const char *menuText = "Minesweeper 3D";
-    ImVec2 menuTextSize = ImGui::CalcTextSize(menuText);
-    float menuX = (vp->WorkSize.x - menuTextSize.x) * 0.5f;
-    ImGui::SetCursorPos((ImVec2(menuX, cursorBeforeMenu.y)));
-    ImGui::Text("%s", menuText);
-    ImGui::SetCursorPos(
-        (ImVec2(cursorBeforeMenu.x, cursorBeforeMenu.y + menuTextSize.y)));
-    ImGui::SetWindowFontScale(1.0f);
-  }
+  components::Text("Minesweeper 3D", TextStyle{}.fontSize(24.f),
+                   Modifier{}.fillWidth().centerHorizontally());
 
   {
     const char *buttonText = "Play";
     ImVec2 cursorBeforeButton = ImGui::GetCursorPos();
-    ImVec2 cursor = ImGui::GetCursorPos();
-    ImGui::SetCursorPos(cursor + ImVec2(0, 40.f));
     ImGui::SetWindowFontScale(3.0f);
     ImGui::PushItemWidth(200.f);
 
