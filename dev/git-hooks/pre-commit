@@ -14,19 +14,33 @@ fi
 # Check formatting of Added, Copied, Modified, Renamed. C++ files only
 # Generally only .hpp convetion is used, but we check .h also
 FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E ".*\.(cpp|hpp|h)$")
+REPO_ROOT="$(git rev-parse --show-toplevel)"
 
-
-if [ -n "$FILES" ]; then
-   echo "Checking formatting of ${#FILES[@]} files"
-
-   for file in $FILES; do
-      # Check commited changes, not the (possibly uncommited) file on the disk
-      git show ":$file" | clang-format --dry-run --Werror --assume-filename="$file"
-      if [ $? -ne 0 ]; then
-	 exit 2
-      fi
-   done
+if [ -z "$FILES" ];then
+   echo "No files to check"
+   exit 0
 fi
+
+
+echo "Checking formatting of ${#FILES[@]} files"
+for file in $FILES; do
+   # Check commited changes, not the (possibly uncommited) file on the disk
+   git show ":$file" | clang-format --dry-run --Werror --assume-filename="$file"
+   if [ $? -ne 0 ]; then
+      exit 2
+   fi
+done
+
+
+if ! command -v cppcheck > /dev/null 2>&1; then
+   echo "cppcheck executable is not available on PATH."
+   echo "Aborting."
+   exit 3
+fi
+
+echo "Running cppcheck"
+echo "$FILES"
+echo "$FILES" | cppcheck --enable=warning --inconclusive --force --inline-suppr --suppressions-list="$REPO_ROOT/cppcheck.suppressions" --file-list="-"
 
 echo "Finished pre-commit"
 exit 0
