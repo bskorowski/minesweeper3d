@@ -9,6 +9,7 @@
 #include "render/core.hpp"
 #include "render/program.hpp"
 #include "utility/cast.hpp"
+#include <logzy/logzy.hpp>
 
 struct Cell {
   enum class State : std::uint8_t { Default, Dug, Flagged };

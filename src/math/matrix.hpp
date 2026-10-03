@@ -4,7 +4,7 @@
 #include "utility/types.hpp"
 #include <array>
 #include <concepts>
-#include <logzy/logzy.hpp>
+#include <cstdint>
 #include <math.h>
 #include <numeric>
 #include <string>
@@ -115,8 +115,6 @@ void printMemoryLayout(const mat<T, Rows, Cols> &m) {
   }
 
   out.push_back('\n');
-
-  logzy::info("Memory layout: {}", out);
 }
 
 template <Numeric T, std::size_t Size>
