@@ -48,6 +48,8 @@ add_library(
    ./src/render/texture.cpp
    ./src/render/texture.hpp
 
+   ./src/ui/components/modifier.hpp
+
    ./src/render/window/window.hpp
    ./src/render/window/window.cpp
    ./src/render/window/window_system.hpp

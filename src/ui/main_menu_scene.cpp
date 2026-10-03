@@ -3,6 +3,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "ui/components/modifier.hpp"
 #include "ui/game_scene.hpp"
 
 void MainMenuScene::updateAndDrawUI() {
