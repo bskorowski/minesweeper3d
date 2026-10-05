@@ -1,8 +1,13 @@
+if(DEFINED CMAKE_CXX_COMPILER_LAUNCHER)
+   message(STATUS "CMAKE_CXX_COMPILER_LAUNCHER already set to '${CMAKE_CXX_COMPILER_LAUNCHER}'. Cannot setup ccache." )
+   return()
+endif()
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
    set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")  
    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")  
+   message(STATUS "Setup ccache to be compiler launcher.")
 else()
    message(WARNING "No ccache in path. It is worth installing.")
 endif()
