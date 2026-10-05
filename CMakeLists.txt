@@ -7,7 +7,9 @@ project(minesweeper3d)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+include(./cmake/setup-linker.cmake)
 include(./cmake/ccache.cmake)
+
 
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
